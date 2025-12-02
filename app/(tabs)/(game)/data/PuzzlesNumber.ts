@@ -23,7 +23,7 @@ const LEVELS_SINO: GameLevel[] = [
     id: 'sino3',
     type: QuestionType.MCQ_AUDIO,
     question: 'Listen and choose the number.',
-    textToSpeak: 'Sam',
+    textToSpeak: '삼',
     options: ['1', '3', '8', '10'],
     correctAnswer: '3',
   },
@@ -43,10 +43,14 @@ const LEVELS_NATIVE: GameLevel[] = [
   },
   {
     id: 'native2',
-    type: QuestionType.WORD_PUZZLE,
-    question: 'Spell the number "One" in English.',
-    imageUrl: 'https://images.unsplash.com/photo-1555861496-0666c8981751?auto=format&fit=crop&w=600&q=80',
-    word: 'ONE',
+    type: QuestionType.MATCHING,
+    question: 'Match the Native Korean number.',
+    pairs: [
+      { id: 'na7',  left: '7',  right: 'Ilgop (일곱)' },
+      { id: 'na8',  left: '8',  right: 'Yeodeol (여덟)' },
+      { id: 'na9',  left: '9',  right: 'Ahop (아홉)' },
+      { id: 'na10', left: '10', right: 'Yeol (열)' },
+    ],
   },
 ];
 
@@ -54,22 +58,14 @@ const LEVELS_MONEY: GameLevel[] = [
   {
     id: 'money1',
     type: QuestionType.MCQ,
-    question: 'What is the currency of South Korea?',
-    options: ['Yen', 'Won', 'Dollar', 'Yuan'],
-    correctAnswer: 'Won',
+    question: 'If something costs “만오천원,” how much is it?',
+    options: ['1,500 won', '5,000 won', '15,000 won', '50,000 won'],
+    correctAnswer: '15,000 won',
   },
   {
     id: 'money2',
-    type: QuestionType.MCQ_IMAGE,
-    question: 'Is this a coin or a bill?',
-    imageUrl: 'https://images.unsplash.com/photo-1621981386829-9b788a825eb3?auto=format&fit=crop&w=600&q=80',
-    options: ['Coin', 'Bill', 'Credit Card', 'Check'],
-    correctAnswer: 'Coin',
-  },
-  {
-    id: 'money3',
     type: QuestionType.YES_NO,
-    question: 'Is 100 cents equal to 1 dollar?',
+    question: 'Is “만원” equal to 10,000 won?',
     correctAnswer: true,
   },
 ];
