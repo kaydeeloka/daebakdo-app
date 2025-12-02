@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MCQAudioLevel } from '../../types';
-import { Button } from '../Button';
-import { motion } from 'framer-motion';
-import { CheckCircle2, XCircle, Play, Volume2 } from 'lucide-react';
 import { shuffleArray } from '../../utils';
 
 interface McqAudioLevelProps {
@@ -21,58 +19,52 @@ export const McqAudioLevel: React.FC<McqAudioLevelProps> = ({ level, onComplete 
     cancelSpeech();
   }, [level]);
 
-  // Clean up speech on unmount
   useEffect(() => {
     return () => cancelSpeech();
   }, []);
 
   const cancelSpeech = () => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
+    if ('speechSynthesis' in global) {
+      global.speechSynthesis.cancel();
       setIsPlaying(false);
     }
   };
 
   const handleSpeak = () => {
-    if (!('speechSynthesis' in window)) {
-      alert("Text-to-Speech is not supported in this browser.");
+    if (!('speechSynthesis' in global)) {
+      Alert.alert("Text-to-Speech not supported", "Text-to-Speech is not supported on this platform.");
       return;
     }
 
     if (isPlaying) {
-      window.speechSynthesis.cancel();
+      global.speechSynthesis.cancel();
       setIsPlaying(false);
       return;
     }
 
     const utterance = new SpeechSynthesisUtterance(level.textToSpeak);
-    
-    // LOGIC: Language Detection
-    // 1. If explicit language is provided in data, use it.
-    // 2. If text contains Korean characters, use 'ko-KR'.
-    // 3. Otherwise default to 'en-US'.
+
     if (level.language) {
       utterance.lang = level.language;
     } else {
       const hasKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(level.textToSpeak);
       utterance.lang = hasKorean ? 'ko-KR' : 'en-US';
     }
-    
     utterance.onstart = () => setIsPlaying(true);
     utterance.onend = () => setIsPlaying(false);
     utterance.onerror = () => setIsPlaying(false);
-    
-    window.speechSynthesis.speak(utterance);
+
+    global.speechSynthesis.speak(utterance);
   };
 
   const handleSelect = (option: string) => {
     if (hasSubmitted) return;
-    
+
     cancelSpeech();
-    
+
     setSelectedOption(option);
     setHasSubmitted(true);
-    
+
     const isCorrect = option === level.correctAnswer;
     setTimeout(() => {
       onComplete(isCorrect);
@@ -80,92 +72,168 @@ export const McqAudioLevel: React.FC<McqAudioLevelProps> = ({ level, onComplete 
   };
 
   return (
-    <div className="flex flex-col h-full w-full">
-      {/* Main Content */}
-      <div className="flex-grow flex flex-col items-center justify-center text-center pb-6">
-        {/* CONFIG: Question Text Size */}
-        <h2 className="text-xl md:text-2xl font-bold text-dark-text mb-8">{level.question}</h2>
+    <View style={styles.root}>
+      {/* Main content */}
+      <View style={styles.mainContent}>
+        <Text style={styles.questionText}>{level.question}</Text>
 
-        <div className="relative">
-          {isPlaying && (
-            <motion.div 
-              className="absolute inset-0 bg-secondary rounded-full blur-xl opacity-40"
-              animate={{ scale: [1, 1.4, 1] }}
-              transition={{ repeat: Infinity, duration: 2 }}
-            />
+        <TouchableOpacity
+          onPress={handleSpeak}
+          activeOpacity={0.8}
+          style={[styles.playButton, isPlaying ? styles.playButtonActive : styles.playButtonInactive]}
+        >
+          {isPlaying ? (
+            <ActivityIndicator size="large" color="#fff" />
+          ) : (
+            <Text style={styles.playIcon}>▶</Text> // Simple play icon; replace with vector icon if desired
           )}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleSpeak}
-            /* CONFIG: Play Button Size (w-32 h-32) */
-            className={`
-              relative z-10 w-32 h-32 rounded-full flex items-center justify-center shadow-xl border-4 transition-all
-              ${isPlaying 
-                ? 'bg-secondary border-secondary-light shadow-blue-500/50 text-white' 
-                : 'bg-white border-gray-100 hover:border-secondary/30 text-secondary'
-              }
-            `}
-          >
-            {isPlaying ? (
-              <div className="flex gap-2 items-end h-12">
-                 <motion.div animate={{ height: [15, 40, 15] }} transition={{ repeat: Infinity, duration: 0.6 }} className="w-2 bg-white rounded-full" />
-                 <motion.div animate={{ height: [25, 35, 25] }} transition={{ repeat: Infinity, duration: 0.5, delay: 0.1 }} className="w-2 bg-white rounded-full" />
-                 <motion.div animate={{ height: [20, 45, 20] }} transition={{ repeat: Infinity, duration: 0.7, delay: 0.2 }} className="w-2 bg-white rounded-full" />
-              </div>
-            ) : (
-              <Play className="w-12 h-12 ml-2 fill-current" />
-            )}
-          </motion.button>
-        </div>
+        </TouchableOpacity>
 
-        <div className="mt-6 flex items-center gap-2 text-gray-500 text-sm font-bold uppercase tracking-widest">
-          <Volume2 className="w-4 h-4" />
-          <span>Tap to listen</span>
-        </div>
-      </div>
+        <View style={styles.listenHint}>
+          <Text style={styles.listenHintText}>Tap to listen</Text>
+        </View>
+      </View>
 
-      {/* Footer: Options */}
-      <div className="flex-shrink-0 grid grid-cols-1 sm:grid-cols-2 gap-3 pb-2">
+      {/* Options footer */}
+      <View style={styles.optionsGrid}>
         {shuffledOptions.map((option, index) => {
-          let variant: 'outline' | 'success' | 'danger' = 'outline';
-          let Icon = null;
+          const isCorrect = option === level.correctAnswer;
+          const isSelected = option === selectedOption;
+
+          let buttonStyle = styles.optionButtonOutline;
+          let textStyle = styles.optionTextOutline;
 
           if (hasSubmitted) {
-            if (option === level.correctAnswer) {
-              variant = 'success';
-              Icon = CheckCircle2;
-            } else if (option === selectedOption) {
-              variant = 'danger';
-              Icon = XCircle;
+            if (isCorrect) {
+              buttonStyle = styles.optionButtonSuccess;
+              textStyle = styles.optionTextSuccess;
+            } else if (isSelected) {
+              buttonStyle = styles.optionButtonDanger;
+              textStyle = styles.optionTextDanger;
             }
           }
 
           return (
-            <motion.div
+            <TouchableOpacity
               key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
+              onPress={() => handleSelect(option)}
+              disabled={hasSubmitted}
+              style={[styles.optionButton, buttonStyle, hasSubmitted && !isCorrect && !isSelected ? { opacity: 0.4 } : {}]}
+              activeOpacity={0.8}
             >
-              <Button
-                fullWidth
-                variant={variant}
-                onClick={() => handleSelect(option)}
-                disabled={hasSubmitted}
-                whileHover={{ scale: 1.02 }}
-                /* CONFIG: Button Height (h-16) and Text Size (text-lg) */
-                className={`relative flex items-center justify-center h-16 md:h-20 text-lg font-bold ${
-                  hasSubmitted && option !== level.correctAnswer && option !== selectedOption ? 'opacity-40' : ''
-                } ${variant === 'outline' ? 'bg-white text-dark-text shadow-sm hover:shadow-md hover:border-secondary/30' : ''}`}
-              >
-                <span>{option}</span>
-                {Icon && <Icon className="w-5 h-5 ml-2 absolute right-4" />}
-              </Button>
-            </motion.div>
+              <Text style={[styles.optionText, textStyle]}>{option}</Text>
+              {/* You can add icons here using a React Native icon library */}
+            </TouchableOpacity>
           );
         })}
-      </div>
-    </div>
+      </View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+  mainContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: 24,
+  },
+  questionText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#111827',
+    marginBottom: 32,
+    textAlign: 'center',
+  },
+  playButton: {
+    width: 128,
+    height: 128,
+    borderRadius: 64,
+    borderWidth: 4,
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  playButtonActive: {
+    backgroundColor: '#f43f5e', // secondary
+    borderColor: '#fb7185', // secondary-light
+  },
+  playButtonInactive: {
+    backgroundColor: '#fff',
+    borderColor: '#e5e7eb', // gray-100
+  },
+  playIcon: {
+    fontSize: 48,
+    color: '#f43f5e',
+  },
+  listenHint: {
+    marginTop: 12,
+  },
+  listenHintText: {
+    color: '#6b7280',
+    fontWeight: '700',
+    fontSize: 14,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  optionsGrid: {
+    flexShrink: 0,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12 as any,
+    justifyContent: 'center',
+    paddingBottom: 8,
+  },
+  optionButton: {
+    minWidth: '40%',
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    margin: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  optionButtonOutline: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  optionButtonSuccess: {
+    backgroundColor: '#dcfce7',
+    borderWidth: 1,
+    borderColor: '#22c55e',
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  optionButtonDanger: {
+    backgroundColor: '#fee2e2',
+    borderWidth: 1,
+    borderColor: '#ef4444',
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  optionText: {
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  optionTextOutline: {
+    color: '#111827',
+  },
+  optionTextSuccess: {
+    color: '#15803d',
+  },
+  optionTextDanger: {
+    color: '#b91c1c',
+  },
+});

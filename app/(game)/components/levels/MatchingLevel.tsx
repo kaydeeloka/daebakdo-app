@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MatchingLevel as IMatchingLevel } from '../../types';
-import { motion } from 'framer-motion';
 import { shuffleArray } from '../../utils';
 
 interface MatchingLevelProps {
@@ -9,12 +9,12 @@ interface MatchingLevelProps {
 }
 
 export const MatchingLevel: React.FC<MatchingLevelProps> = ({ level, onComplete }) => {
-  const [rightItems, setRightItems] = useState<{id: string, text: string}[]>([]);
-  const [leftItems, setLeftItems] = useState<{id: string, text: string}[]>([]);
-  
+  const [rightItems, setRightItems] = useState<{ id: string; text: string }[]>([]);
+  const [leftItems, setLeftItems] = useState<{ id: string; text: string }[]>([]);
+
   const [selectedLeft, setSelectedLeft] = useState<string | null>(null);
   const [matchedIds, setMatchedIds] = useState<Set<string>>(new Set());
-  const [wrongShake, setWrongShake] = useState<string | null>(null);
+  const [wrongShake, setWrongShake] = useState<string | null>(null); // placeholder for shake animation
 
   useEffect(() => {
     const rightSide = level.pairs.map(p => ({ id: p.id, text: p.right }));
@@ -22,6 +22,9 @@ export const MatchingLevel: React.FC<MatchingLevelProps> = ({ level, onComplete 
 
     setRightItems(shuffleArray(rightSide));
     setLeftItems(shuffleArray(leftSide));
+    setSelectedLeft(null);
+    setMatchedIds(new Set());
+    setWrongShake(null);
   }, [level]);
 
   const handleLeftClick = (id: string) => {
@@ -32,7 +35,7 @@ export const MatchingLevel: React.FC<MatchingLevelProps> = ({ level, onComplete 
 
   const handleRightClick = (targetId: string) => {
     if (matchedIds.has(targetId)) return;
-    
+
     if (selectedLeft) {
       if (selectedLeft === targetId) {
         const newMatched = new Set(matchedIds);
@@ -52,69 +55,140 @@ export const MatchingLevel: React.FC<MatchingLevelProps> = ({ level, onComplete 
   };
 
   return (
-    <div className="flex flex-col h-full w-full">
-      <div className="flex-shrink-0 mb-6 text-center">
-        {/* CONFIG: Question Text Size */}
-        <h2 className="text-xl md:text-2xl font-bold text-dark-text">{level.question}</h2>
-        <p className="text-gray-500 text-sm mt-1">Tap left item, then match on right.</p>
-      </div>
-      
-      {/* CONFIG: Grid Layout Spacing (gap-4) */}
-      <div className="flex-grow flex justify-between gap-4 md:gap-8 items-stretch pb-2">
+    <View style={styles.root}>
+      <View style={styles.header}>
+        <Text style={styles.questionText}>{level.question}</Text>
+        <Text style={styles.instructionText}>Tap left item, then match on right.</Text>
+      </View>
+
+      <View style={styles.columnsContainer}>
         {/* Left Column */}
-        <div className="flex flex-col gap-3 flex-1 justify-center">
-          {leftItems.map((item) => {
+        <View style={styles.column}>
+          {leftItems.map(item => {
             const isMatched = matchedIds.has(item.id);
             const isSelected = selectedLeft === item.id;
-
             return (
-              <motion.button
+              <TouchableOpacity
                 key={item.id}
-                layout
-                onClick={() => handleLeftClick(item.id)}
-                /* CONFIG: Tile Padding (p-4) and Text Size (text-base) */
-                className={`p-4 rounded-xl text-base md:text-lg font-bold transition-all shadow-md text-left h-full flex items-center ${
-                  isMatched 
-                    ? 'bg-green-100 text-green-700 border border-green-200 cursor-default shadow-none' 
-                    : isSelected 
-                      ? 'bg-secondary text-white shadow-xl shadow-secondary/30 scale-105' 
-                      : 'bg-white text-dark-text hover:border-secondary/30 border-2 border-transparent'
-                }`}
+                activeOpacity={0.8}
+                onPress={() => handleLeftClick(item.id)}
                 disabled={isMatched}
+                style={[
+                  styles.tile,
+                  isMatched && styles.tileMatched,
+                  !isMatched && isSelected && styles.tileSelected,
+                  { justifyContent: 'flex-start' },
+                ]}
               >
-                {item.text}
-              </motion.button>
+                <Text style={[styles.tileText, isMatched && styles.tileTextMatched]}>
+                  {item.text}
+                </Text>
+              </TouchableOpacity>
             );
           })}
-        </div>
+        </View>
 
         {/* Right Column */}
-        <div className="flex flex-col gap-3 flex-1 justify-center">
-          {rightItems.map((item) => {
+        <View style={styles.column}>
+          {rightItems.map(item => {
             const isMatched = matchedIds.has(item.id);
-            const isShake = wrongShake === item.id;
-
+            const isShake = wrongShake === item.id;  // placeholder
             return (
-              <motion.button
+              <TouchableOpacity
                 key={item.id}
-                layout
-                animate={isShake ? { x: [-10, 10, -10, 10, 0] } : {}}
-                transition={{ duration: 0.4 }}
-                onClick={() => handleRightClick(item.id)}
-                /* CONFIG: Tile Padding (p-4) and Text Size (text-base) */
-                className={`p-4 rounded-xl text-base md:text-lg font-bold transition-all shadow-md text-right h-full flex items-center justify-end ${
-                  isMatched 
-                    ? 'bg-green-100 text-green-700 border border-green-200 cursor-default shadow-none' 
-                    : 'bg-white text-dark-text hover:border-secondary/30 border-2 border-transparent'
-                }`}
+                activeOpacity={0.8}
+                onPress={() => handleRightClick(item.id)}
                 disabled={isMatched}
+                style={[
+                  styles.tile,
+                  isMatched && styles.tileMatched,
+                  { justifyContent: 'flex-end' },
+                  isShake && styles.tileWrong,
+                ]}
               >
-                {item.text}
-              </motion.button>
+                <Text style={[styles.tileText, isMatched && styles.tileTextMatched]}>
+                  {item.text}
+                </Text>
+              </TouchableOpacity>
             );
           })}
-        </div>
-      </div>
-    </div>
+        </View>
+      </View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    paddingBottom: 8,
+  },
+  header: {
+    marginBottom: 24,
+    alignItems: 'center',
+  },
+  questionText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#111827', // dark-text
+    textAlign: 'center',
+  },
+  instructionText: {
+    fontSize: 14,
+    color: '#6b7280', // gray-500
+    marginTop: 4,
+    textAlign: 'center',
+  },
+  columnsContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 16 as any,
+  },
+  column: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  tile: {
+    flex: 1,
+    marginVertical: 6,
+    borderRadius: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    backgroundColor: '#ffffff',
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
+    borderWidth: 2,
+    borderColor: 'transparent',
+    justifyContent: 'center',
+  },
+  tileSelected: {
+    backgroundColor: '#f43f5e', // secondary color
+    shadowColor: '#f43f5e',
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 6,
+  },
+  tileMatched: {
+    backgroundColor: '#dcfce7',
+    borderColor: '#bbf7d0',
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  tileWrong: {
+    borderColor: '#f87171',
+  },
+  tileText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#111827',
+  },
+  tileTextMatched: {
+    color: '#15803d',
+  },
+});

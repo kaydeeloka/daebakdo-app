@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { WordPuzzleLevel as IWordPuzzleLevel } from '../../types';
-import { motion, AnimatePresence } from 'framer-motion';
 import { shuffleArray } from '../../utils';
 
 interface Letter {
@@ -22,9 +22,9 @@ export const WordPuzzleLevel: React.FC<WordPuzzleLevelProps> = ({ level, onCompl
     const chars = level.word.toUpperCase().split('');
     const initialLetters: Letter[] = chars.map((char, i) => ({
       id: `${char}-${i}-${Math.random()}`,
-      char
+      char,
     }));
-    
+
     setBank(shuffleArray(initialLetters));
     setSlots(new Array(chars.length).fill(null));
     setStatus('playing');
@@ -45,7 +45,7 @@ export const WordPuzzleLevel: React.FC<WordPuzzleLevelProps> = ({ level, onCompl
 
   const handleSlotClick = (index: number) => {
     if (status !== 'playing') return;
-    
+
     const letter = slots[index];
     if (!letter) return;
 
@@ -64,77 +64,178 @@ export const WordPuzzleLevel: React.FC<WordPuzzleLevelProps> = ({ level, onCompl
         setTimeout(() => onComplete(true), 1500);
       } else {
         setStatus('wrong');
-        setTimeout(() => setStatus('playing'), 1000); 
+        setTimeout(() => setStatus('playing'), 1000);
       }
     }
   }, [slots, level.word, onComplete]);
 
   return (
-    <div className="flex flex-col h-full w-full">
+    <View style={styles.root}>
       {/* Main Content */}
-      <div className="flex-grow flex flex-col items-center justify-start pt-2 gap-6">
-        {/* CONFIG: Question Text Size */}
-        <h2 className="text-xl md:text-2xl font-bold text-dark-text text-center">{level.question}</h2>
-        
-        {/* CONFIG: Image Container Height (max-h-[30vh]) */}
-        <div className="relative group rounded-2xl overflow-hidden shadow-xl border-4 border-white bg-white w-full max-h-[30vh] aspect-video">
-          <img 
-            src={level.imageUrl} 
-            alt="Puzzle" 
-            className="w-full h-full object-contain"
+      <ScrollView contentContainerStyle={styles.mainContent} keyboardShouldPersistTaps="handled">
+        <Text style={styles.questionText}>{level.question}</Text>
+
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: level.imageUrl }}
+            style={styles.image}
+            resizeMode="contain"
+            accessible
+            accessibilityLabel="Puzzle"
           />
-        </div>
+        </View>
 
         {/* Answer Slots */}
-        <div className="flex gap-2 justify-center flex-wrap w-full mt-4">
-          {slots.map((slot, i) => (
-            <motion.button
-              key={i}
-              onClick={() => handleSlotClick(i)}
-              layout
-              /* CONFIG: Slot Size (w-12 h-14) and Text Size (text-2xl) */
-              className={`w-12 h-14 md:w-14 md:h-16 rounded-lg border-b-[4px] flex items-center justify-center text-2xl font-black transition-all
-                ${slot 
-                  ? (status === 'correct' 
-                      ? 'bg-green-500 border-green-700 text-white shadow-green-500/50' 
-                      : status === 'wrong'
-                        ? 'bg-red-500 border-red-700 text-white shadow-red-500/50'
-                        : 'bg-secondary border-secondary-dark text-white shadow-blue-500/30')
-                  : 'bg-gray-200 border-gray-300 text-transparent'
-                }
-              `}
-              whileHover={slot ? { y: -2 } : {}}
-              whileTap={slot ? { y: 2 } : {}}
-              animate={status === 'wrong' ? { x: [-5, 5, -5, 5, 0] } : {}}
-            >
-              {slot?.char}
-            </motion.button>
-          ))}
-        </div>
-      </div>
+        <View style={styles.slotsContainer}>
+          {slots.map((slot, i) => {
+            const isFilled = slot !== null;
+            const slotStyle = [
+              styles.slot,
+              isFilled && (status === 'correct' ? styles.slotCorrect : status === 'wrong' ? styles.slotWrong : styles.slotSelected),
+            ];
+
+            return (
+              <TouchableOpacity
+                key={i}
+                onPress={() => handleSlotClick(i)}
+                disabled={!isFilled || status !== 'playing'}
+                style={slotStyle}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.slotText, isFilled && styles.slotTextFilled]}>{slot?.char}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </ScrollView>
 
       {/* Footer: Bank */}
-      <div className="flex-shrink-0 pt-4 pb-2">
-         {/* CONFIG: Bank Container Padding and Min Height */}
-         <div className="flex gap-2 justify-center flex-wrap p-4 bg-white rounded-[1.5rem] w-full min-h-[5rem] border-2 border-gray-100 shadow-xl">
-           <AnimatePresence mode='popLayout'>
-              {bank.map((letter) => (
-                <motion.button
-                  key={letter.id}
-                  layoutId={letter.id}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0 }}
-                  onClick={() => handleBankClick(letter)}
-                  /* CONFIG: Letter Button Size (w-12 h-12) and Text Size (text-xl) */
-                  className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-neutral-bg text-dark-text font-bold text-xl shadow-sm hover:shadow-lg hover:bg-white active:scale-95 transition-all border-2 border-gray-200 flex items-center justify-center hover:text-secondary hover:border-secondary/30"
-                >
-                  {letter.char}
-                </motion.button>
-              ))}
-           </AnimatePresence>
-         </div>
-      </div>
-    </div>
+      <View style={styles.bankContainer}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.bankContent}>
+          {bank.map(letter => (
+            <TouchableOpacity
+              key={letter.id}
+              onPress={() => handleBankClick(letter)}
+              style={styles.bankLetter}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.bankLetterText}>{letter.char}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  mainContent: {
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  questionText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#111827',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  imageContainer: {
+    width: '100%',
+    maxHeight: 160,
+    borderRadius: 24,
+    overflow: 'hidden',
+    backgroundColor: '#fff',
+    borderWidth: 4,
+    borderColor: '#fff',
+    marginBottom: 24,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 8,
+  },
+  image: {
+    width: '100%',
+    height: 160,
+  },
+  slotsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
+  slot: {
+    width: 48,
+    height: 56,
+    borderRadius: 12,
+    borderBottomWidth: 4,
+    borderColor: '#d1d5db',
+    backgroundColor: '#e5e7eb',
+    margin: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  slotSelected: {
+    backgroundColor: '#3b82f6',
+    borderColor: '#1e40af',
+  },
+  slotCorrect: {
+    backgroundColor: '#22c55e',
+    borderColor: '#166534',
+    shadowColor: '#22c55e',
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 10,
+  },
+  slotWrong: {
+    backgroundColor: '#ef4444',
+    borderColor: '#991b1b',
+    shadowColor: '#ef4444',
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 10,
+  },
+  slotText: {
+    fontSize: 28,
+    fontWeight: '900',
+    color: 'transparent',
+  },
+  slotTextFilled: {
+    color: '#fff',
+  },
+  bankContainer: {
+    borderTopWidth: 2,
+    borderTopColor: '#f3f4f6',
+    paddingVertical: 12,
+    backgroundColor: '#fff',
+  },
+  bankContent: {
+    paddingHorizontal: 12,
+    alignItems: 'center',
+  },
+  bankLetter: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#f9fafb',
+    borderWidth: 2,
+    borderColor: '#d1d5db',
+    marginHorizontal: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  bankLetterText: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#111827',
+  },
+});

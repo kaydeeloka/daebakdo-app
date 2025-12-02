@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MCQImageLevel } from '../../types';
-import { Button } from '../Button';
-import { motion } from 'framer-motion';
-import { CheckCircle2, XCircle } from 'lucide-react';
 import { shuffleArray } from '../../utils';
 
 interface McqImageLevelProps {
@@ -31,63 +29,146 @@ export const McqImageLevel: React.FC<McqImageLevelProps> = ({ level, onComplete 
   };
 
   return (
-    <div className="flex flex-col h-full w-full">
+    <View style={styles.root}>
       {/* Main Content: Image & Question */}
-      <div className="flex-grow flex flex-col items-center justify-center pb-4">
-        {/* CONFIG: Question Text Size */}
-        <h2 className="text-xl md:text-2xl font-bold text-dark-text text-center mb-6">{level.question}</h2>
-        
-        {/* CONFIG: Image Container Height (max-h-[30vh]) */}
-        <div className="w-full max-h-[30vh] md:max-h-[40vh] aspect-video relative group rounded-2xl overflow-hidden shadow-xl border-4 border-white bg-white">
-           <img 
-             src={level.imageUrl} 
-             alt="Question" 
-             className="w-full h-full object-contain"
-           />
-        </div>
-      </div>
+      <View style={styles.mainContent}>
+        <Text style={styles.questionText}>{level.question}</Text>
+
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: level.imageUrl }}
+            style={styles.image}
+            resizeMode="contain"
+            accessibilityLabel="Question"
+          />
+        </View>
+      </View>
 
       {/* Footer: Options Grid */}
-      <div className="flex-shrink-0 grid grid-cols-1 sm:grid-cols-2 gap-3 pb-2">
+      <View style={styles.optionsGrid}>
         {shuffledOptions.map((option, index) => {
-          let variant: 'outline' | 'success' | 'danger' = 'outline';
-          let Icon = null;
+          const isCorrect = option === level.correctAnswer;
+          const isSelected = option === selectedOption;
+
+          let buttonStyle = styles.optionButtonOutline;
+          let textStyle = styles.optionTextOutline;
 
           if (hasSubmitted) {
-            if (option === level.correctAnswer) {
-              variant = 'success';
-              Icon = CheckCircle2;
-            } else if (option === selectedOption) {
-              variant = 'danger';
-              Icon = XCircle;
+            if (isCorrect) {
+              buttonStyle = styles.optionButtonSuccess;
+              textStyle = styles.optionTextSuccess;
+            } else if (isSelected) {
+              buttonStyle = styles.optionButtonDanger;
+              textStyle = styles.optionTextDanger;
             }
           }
 
           return (
-            <motion.div
+            <TouchableOpacity
               key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
+              onPress={() => handleSelect(option)}
+              disabled={hasSubmitted}
+              style={[
+                styles.optionButton,
+                buttonStyle,
+                hasSubmitted && !isCorrect && !isSelected ? { opacity: 0.4 } : {},
+              ]}
+              activeOpacity={0.8}
             >
-              <Button
-                fullWidth
-                variant={variant}
-                onClick={() => handleSelect(option)}
-                disabled={hasSubmitted}
-                whileHover={{ scale: 1.02 }}
-                /* CONFIG: Button Height (h-16) and Text Size (text-lg) */
-                className={`relative flex items-center justify-center h-16 md:h-20 text-lg font-bold ${
-                  hasSubmitted && option !== level.correctAnswer && option !== selectedOption ? 'opacity-40' : ''
-                } ${variant === 'outline' ? 'bg-white text-dark-text shadow-sm hover:shadow-md hover:border-secondary/30' : ''}`}
-              >
-                <span>{option}</span>
-                {Icon && <Icon className="w-5 h-5 ml-2 absolute right-4" />}
-              </Button>
-            </motion.div>
+              <Text style={[styles.optionText, textStyle]}>{option}</Text>
+              {/* For icons, use react-native-vector-icons or similar */}
+            </TouchableOpacity>
           );
         })}
-      </div>
-    </div>
+      </View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+  mainContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: 16,
+  },
+  questionText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#111827',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  imageContainer: {
+    width: '100%',
+    maxHeight: '30%',
+    borderRadius: 24,
+    overflow: 'hidden',
+    backgroundColor: '#fff',
+    borderWidth: 4,
+    borderColor: '#fff',
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 5,
+  },
+  image: {
+    width: '100%',
+    height: 200,
+  },
+  optionsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 12 as any,
+    paddingBottom: 8,
+  },
+  optionButton: {
+    minWidth: '40%',
+    margin: 6,
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  optionButtonOutline: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  optionButtonSuccess: {
+    backgroundColor: '#dcfce7',
+    borderColor: '#22c55e',
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  optionButtonDanger: {
+    backgroundColor: '#fee2e2',
+    borderColor: '#ef4444',
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  optionText: {
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  optionTextOutline: {
+    color: '#111827',
+  },
+  optionTextSuccess: {
+    color: '#15803d',
+  },
+  optionTextDanger: {
+    color: '#b91c1c',
+  },
+});

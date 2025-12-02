@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MatchingImageLevel as IMatchingImageLevel } from '../../types';
-import { motion } from 'framer-motion';
 import { shuffleArray } from '../../utils';
 
 interface MatchingImageLevelProps {
@@ -9,12 +9,12 @@ interface MatchingImageLevelProps {
 }
 
 export const MatchingImageLevel: React.FC<MatchingImageLevelProps> = ({ level, onComplete }) => {
-  const [rightItems, setRightItems] = useState<{id: string, text: string}[]>([]);
-  const [leftItems, setLeftItems] = useState<{id: string, imageUrl: string}[]>([]);
-  
+  const [rightItems, setRightItems] = useState<{ id: string; text: string }[]>([]);
+  const [leftItems, setLeftItems] = useState<{ id: string; imageUrl: string }[]>([]);
+
   const [selectedLeft, setSelectedLeft] = useState<string | null>(null);
   const [matchedIds, setMatchedIds] = useState<Set<string>>(new Set());
-  const [wrongShake, setWrongShake] = useState<string | null>(null);
+  const [wrongShake, setWrongShake] = useState<string | null>(null); // placeholder if you add animation later
 
   useEffect(() => {
     const rightSide = level.pairs.map(p => ({ id: p.id, text: p.word }));
@@ -22,6 +22,9 @@ export const MatchingImageLevel: React.FC<MatchingImageLevelProps> = ({ level, o
 
     setRightItems(shuffleArray(rightSide));
     setLeftItems(shuffleArray(leftSide));
+    setSelectedLeft(null);
+    setMatchedIds(new Set());
+    setWrongShake(null);
   }, [level]);
 
   const handleLeftClick = (id: string) => {
@@ -32,7 +35,7 @@ export const MatchingImageLevel: React.FC<MatchingImageLevelProps> = ({ level, o
 
   const handleRightClick = (targetId: string) => {
     if (matchedIds.has(targetId)) return;
-    
+
     if (selectedLeft) {
       if (selectedLeft === targetId) {
         const newMatched = new Set(matchedIds);
@@ -44,7 +47,7 @@ export const MatchingImageLevel: React.FC<MatchingImageLevelProps> = ({ level, o
           setTimeout(() => onComplete(true), 1000);
         }
       } else {
-        setWrongShake(targetId);
+        setWrongShake(targetId); // no visual shake yet
         setTimeout(() => setWrongShake(null), 500);
         setSelectedLeft(null);
       }
@@ -52,76 +55,171 @@ export const MatchingImageLevel: React.FC<MatchingImageLevelProps> = ({ level, o
   };
 
   return (
-    <div className="flex flex-col h-full w-full">
-      <div className="flex-shrink-0 mb-6 text-center">
-        {/* CONFIG: Question Text Size */}
-        <h2 className="text-xl md:text-2xl font-bold text-dark-text">{level.question}</h2>
-      </div>
-      
-      {/* CONFIG: Grid Gap (gap-4) */}
-      <div className="flex-grow flex justify-between gap-4 items-stretch pb-2">
+    <View style={styles.root}>
+      <View style={styles.header}>
+        <Text style={styles.questionText}>{level.question}</Text>
+      </View>
+
+      <View style={styles.columnsContainer}>
         {/* Left Column - Images */}
-        <div className="flex flex-col gap-3 flex-1 justify-center">
-          {leftItems.map((item) => {
+        <View style={styles.column}>
+          {leftItems.map(item => {
             const isMatched = matchedIds.has(item.id);
             const isSelected = selectedLeft === item.id;
 
             return (
-              <motion.button
+              <TouchableOpacity
                 key={item.id}
-                layout
-                onClick={() => handleLeftClick(item.id)}
-                className={`relative rounded-xl overflow-hidden shadow-lg transition-all border-4 flex-1 ${
-                  isMatched 
-                    ? 'border-green-400 opacity-40 grayscale' 
-                    : isSelected 
-                      ? 'border-secondary ring-4 ring-secondary/20 scale-105 z-10' 
-                      : 'border-white hover:border-gray-200'
-                }`}
+                activeOpacity={0.8}
+                onPress={() => handleLeftClick(item.id)}
                 disabled={isMatched}
+                style={[
+                  styles.imageButton,
+                  isMatched && styles.imageButtonMatched,
+                  !isMatched && isSelected && styles.imageButtonSelected,
+                ]}
               >
-                <img 
-                  src={item.imageUrl} 
-                  alt="Match option" 
-                  className="w-full h-full object-cover absolute inset-0"
+                <Image
+                  source={{ uri: item.imageUrl }}
+                  style={styles.image}
+                  resizeMode="cover"
                 />
                 {isMatched && (
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                    <span className="text-4xl text-green-500">✓</span>
-                  </div>
+                  <View style={styles.matchedOverlay}>
+                    <Text style={styles.matchedCheck}>✓</Text>
+                  </View>
                 )}
-              </motion.button>
+              </TouchableOpacity>
             );
           })}
-        </div>
+        </View>
 
         {/* Right Column - Words */}
-        <div className="flex flex-col gap-3 flex-1 justify-center">
-          {rightItems.map((item) => {
+        <View style={styles.column}>
+          {rightItems.map(item => {
             const isMatched = matchedIds.has(item.id);
-            const isShake = wrongShake === item.id;
+            const isShake = wrongShake === item.id; // hook for future animation
 
             return (
-              <motion.button
+              <TouchableOpacity
                 key={item.id}
-                layout
-                animate={isShake ? { x: [-10, 10, -10, 10, 0] } : {}}
-                transition={{ duration: 0.4 }}
-                onClick={() => handleRightClick(item.id)}
-                /* CONFIG: Text Size (text-lg) */
-                className={`flex-1 flex items-center justify-center rounded-xl text-base md:text-lg font-bold transition-all shadow-md text-center px-2 ${
-                  isMatched 
-                    ? 'bg-green-100 text-green-700 border border-green-200 cursor-default shadow-none' 
-                    : 'bg-white text-dark-text hover:border-secondary/30 border-2 border-transparent'
-                }`}
+                activeOpacity={0.8}
+                onPress={() => handleRightClick(item.id)}
                 disabled={isMatched}
+                style={[
+                  styles.wordButton,
+                  isMatched && styles.wordButtonMatched,
+                  // placeholder: you could change background if isShake
+                  isShake && styles.wordButtonWrong,
+                ]}
               >
-                {item.text}
-              </motion.button>
+                <Text style={[styles.wordText, isMatched && styles.wordTextMatched]}>
+                  {item.text}
+                </Text>
+              </TouchableOpacity>
             );
           })}
-        </div>
-      </div>
-    </div>
+        </View>
+      </View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    paddingBottom: 8,
+  },
+  header: {
+    marginBottom: 24,
+    alignItems: 'center',
+  },
+  questionText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#111827', // text-dark-text equivalent
+    textAlign: 'center',
+  },
+  columnsContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 16 as any, // or use margin between children if your RN version lacks gap
+    alignItems: 'stretch',
+  },
+  column: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  imageButton: {
+    flex: 1,
+    marginVertical: 6,
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderWidth: 4,
+    borderColor: '#ffffff',
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
+  },
+  imageButtonSelected: {
+    borderColor: '#fb7185', // secondary-ish
+  },
+  imageButtonMatched: {
+    borderColor: '#4ade80',
+    opacity: 0.4,
+  },
+  image: {
+    width: '100%',
+    height: 90,
+  },
+  matchedOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  matchedCheck: {
+    fontSize: 32,
+    color: '#22c55e',
+  },
+  wordButton: {
+    flex: 1,
+    marginVertical: 6,
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    backgroundColor: '#ffffff',
+    borderWidth: 2,
+    borderColor: 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  wordButtonMatched: {
+    backgroundColor: '#dcfce7',
+    borderColor: '#bbf7d0',
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  wordButtonWrong: {
+    borderColor: '#f97373',
+  },
+  wordText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#111827',
+    textAlign: 'center',
+  },
+  wordTextMatched: {
+    color: '#15803d',
+  },
+});

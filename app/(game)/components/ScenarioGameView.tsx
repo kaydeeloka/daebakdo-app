@@ -1,10 +1,10 @@
+import { ArrowLeft, Coffee, HelpCircle, Plane, RotateCcw } from 'lucide-react';
 import React, { useEffect, useRef } from 'react';
+import { useGameEngine } from '../hooks/useGameEngine';
 import { Scenario } from '../types';
 import { ChatMessage } from './ChatMessage';
-import { TypingIndicator } from './TypingIndicator';
 import { ChoiceArea } from './ChoiceArea';
-import { useGameEngine } from '../hooks/useGameEngine';
-import { RotateCcw, ArrowLeft, Coffee, Plane, HelpCircle } from 'lucide-react';
+import { TypingIndicator } from './TypingIndicator';
 
 // Icon mapping (local to this view or shared if preferred)
 const ICON_MAP: Record<string, React.ElementType> = {

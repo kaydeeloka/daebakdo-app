@@ -1,20 +1,114 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import { Animated, Image, StyleSheet, View } from 'react-native';
+
+const BOUNCE_DELAYS = [0, 150, 300];
 
 export const TypingIndicator: React.FC = () => {
+  const bounceValues = BOUNCE_DELAYS.map(() => useRef(new Animated.Value(0)).current);
+
+  useEffect(() => {
+    const animations = bounceValues.map((bounceValue, index) =>
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(bounceValue, {
+            toValue: 1,
+            duration: 500,
+            delay: BOUNCE_DELAYS[index],
+            useNativeDriver: true,
+          }),
+          Animated.timing(bounceValue, {
+            toValue: 0,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+        ])
+      )
+    );
+    Animated.stagger(150, animations).start();
+
+    // Optionally handle clean-up if needed
+    return () => {
+      animations.forEach(anim => anim.stop());
+    };
+  }, [bounceValues]);
+
   return (
-    <div className="flex w-full mb-6 justify-start animate-pulse">
-      <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-neutral-bg flex items-center justify-center mr-3 flex-shrink-0 overflow-hidden border border-border">
-         <img 
-            src="https://picsum.photos/64/64"
-            alt="Bot Avatar" 
-            className="w-full h-full object-cover opacity-50"
+    <View style={styles.container}>
+      <View style={styles.avatarWrapper}>
+        <Image
+          source={{ uri: 'https://picsum.photos/64/64' }}
+          style={styles.avatar}
+          resizeMode="cover"
+          blurRadius={1} // To simulate opacity: 0.5 visually
+        />
+      </View>
+      <View style={styles.bubble}>
+        {bounceValues.map((bounceValue, index) => (
+          <Animated.View
+            key={index}
+            style={[
+              styles.dot,
+              {
+                transform: [
+                  {
+                    translateY: bounceValue.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, -10], // Bounce up 10 units
+                    }),
+                  },
+                ],
+              },
+            ]}
           />
-      </div>
-      <div className="bg-white border border-border rounded-3xl rounded-tl-none px-5 py-4 flex items-center space-x-2 h-auto min-h-[3.5rem] w-24">
-        <div className="w-3 h-3 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-        <div className="w-3 h-3 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-        <div className="w-3 h-3 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-      </div>
-    </div>
+        ))}
+      </View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    width: '100%',
+    marginBottom: 24,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  avatarWrapper: {
+    width: 40, // md:w-12 is 48 though approximating for mobile
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#f3f4f6', // neutral-bg approximate
+    borderWidth: 1,
+    borderColor: '#d1d5db', // border-border approximate
+    marginRight: 12,
+    overflow: 'hidden',
+  },
+  avatar: {
+    width: '100%',
+    height: '100%',
+    opacity: 0.5,
+  },
+  bubble: {
+    backgroundColor: 'white',
+    borderColor: '#d1d5db',
+    borderWidth: 1,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 24,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: 56, // min-h-[3.5rem] ~ 56px
+    width: 96, // w-24 * 4px = 96px approx
+    justifyContent: 'space-between',
+  },
+  dot: {
+    width: 12, // w-3 = 12px
+    height: 12,
+    backgroundColor: '#9ca3af', // gray-400
+    borderRadius: 6,
+  },
+});

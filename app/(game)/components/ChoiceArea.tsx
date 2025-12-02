@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Choice } from '../types';
 
 interface ChoiceAreaProps {
@@ -11,24 +12,51 @@ export const ChoiceArea: React.FC<ChoiceAreaProps> = ({ choices, onSelect, disab
   if (choices.length === 0) return null;
 
   return (
-    <div className="p-4 bg-white border-t border-border animate-fadeInScaleUp">
-      <div className="grid grid-cols-1 gap-4">
-        {choices.map((choice) => (
-          <button
-            key={choice.id}
-            onClick={() => onSelect(choice)}
-            disabled={disabled}
-            className={`
-              w-full text-left px-6 py-5 rounded-2xl border border-border 
-              text-dark-text hover:bg-neutral-bg hover:border-primary-light hover:text-primary-dark
-              transition-all duration-200 active:scale-[0.99] font-medium text-lg md:text-xl
-              disabled:opacity-50 disabled:cursor-not-allowed
-            `}
-          >
+    <View style={styles.container}>
+      {choices.map((choice) => (
+        <TouchableOpacity
+          key={choice.id}
+          onPress={() => onSelect(choice)}
+          disabled={disabled}
+          style={[styles.button, disabled && styles.buttonDisabled]}
+          activeOpacity={0.7}
+        >
+          <Text style={[styles.text, disabled && styles.textDisabled]}>
             {choice.text}
-          </button>
-        ))}
-      </div>
-    </div>
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 16, // p-4 approx 16px
+    backgroundColor: '#ffffff', // bg-white
+    borderTopWidth: 1,
+    borderTopColor: '#ccc', // border-border approximate
+    // No direct animation, could add using Animated API if needed
+  },
+  button: {
+    width: '100%',
+    paddingVertical: 20, // py-5 equivalent approx
+    paddingHorizontal: 24, // px-6 equivalent approx
+    borderRadius: 20, // rounded-2xl approx 16-24
+    borderWidth: 1,
+    borderColor: '#ccc', // border-border approximate
+    backgroundColor: 'transparent',
+    justifyContent: 'center',
+  },
+  buttonDisabled: {
+    opacity: 0.5,
+  },
+  text: {
+    color: '#333333', // text-dark-text approx
+    fontSize: 18, // text-lg to text-xl approximation
+    fontWeight: '500',
+  },
+  textDisabled: {
+    color: '#999999',
+  },
+});

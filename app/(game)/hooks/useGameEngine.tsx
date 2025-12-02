@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Choice, GameState, Message, Scenario } from '../app/(game)/types';
+import { Choice, GameState, Message, Scenario } from '../types';
 
 /**
  * CUSTOM HOOK: useGameEngine
