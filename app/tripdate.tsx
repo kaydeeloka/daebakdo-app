@@ -19,11 +19,16 @@ export default function TripDateScreen() {
   const [showPicker, setShowPicker] = useState(false);
 
   const formattedDate = tripDate
-    ? tripDate.toLocaleDateString('en-GB') // dd/mm/yyyy
+    ? tripDate.toLocaleDateString('en-GB')
     : '';
 
-  const onChange = (_: any, selectedDate?: Date) => {
-    if (Platform.OS !== 'ios') {
+  const openPicker = () => {
+    setShowPicker(true);
+  };
+
+  const onChange = (_event: any, selectedDate?: Date) => {
+    // On Android, picker closes after selection; on iOS inline it stays
+    if (Platform.OS === 'android') {
       setShowPicker(false);
     }
     if (selectedDate) {
@@ -31,30 +36,27 @@ export default function TripDateScreen() {
     }
   };
 
-  const openPicker = () => setShowPicker(true);
-
   const goHome = () => {
-  router.replace('/(tabs)/home');
-};
+    router.replace('/(tabs)/home');
+  };
 
-const handleSave = async () => {
-  if (!tripDate) return;
-  try {
-    await AsyncStorage.setItem('tripDate', tripDate.toISOString());
-  } catch (e) {
-    console.warn('Failed to save trip date', e);
-  }
-  goHome();
-};
+  const handleSave = async () => {
+    if (!tripDate) return;
+    try {
+      await AsyncStorage.setItem('tripDate', tripDate.toISOString());
+    } catch (e) {
+      console.warn('Failed to save trip date', e);
+    }
+    goHome();
+  };
 
   const isValid = !!tripDate;
 
   return (
     <View style={styles.screen}>
-      {/* Top image */}
       <Image source={tripmsg} style={styles.tripImage} resizeMode="contain" />
 
-      {/* Date input (opens calendar) */}
+      {/* Date field */}
       <TouchableOpacity
         style={styles.inputWrapper}
         onPress={openPicker}
@@ -70,17 +72,16 @@ const handleSave = async () => {
         />
       </TouchableOpacity>
 
-      {/* Calendar */}
+      {/* Native date picker */}
       {showPicker && (
         <DateTimePicker
           value={tripDate || new Date()}
           mode="date"
-          display={Platform.OS === 'ios' ? 'inline' : 'calendar'}
+          display={Platform.OS === 'ios' ? 'spinner' : 'calendar'}
           onChange={onChange}
         />
       )}
 
-      {/* Set trip date button */}
       <TouchableOpacity
         style={[styles.button, !isValid && styles.buttonDisabled]}
         disabled={!isValid}
@@ -89,7 +90,6 @@ const handleSave = async () => {
         <Text style={styles.buttonText}>Set trip date</Text>
       </TouchableOpacity>
 
-      {/* Skip text */}
       <TouchableOpacity style={styles.skipWrapper} onPress={goHome}>
         <Text style={styles.skipText}>I’ll add it later</Text>
       </TouchableOpacity>

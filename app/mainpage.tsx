@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 
 const bgSource = require('@/assets/images/background-main.png');
 
-export default function LandingScreen() {
+export default function MainPage() {
   const goToTabsGame = () => router.replace('/(tabs)/game');
   const goToTabsLearn = () => router.replace('/(tabs)/learn');
   const goToTabsHome = () => router.replace('/(tabs)/home');
