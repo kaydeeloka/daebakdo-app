@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { WordPuzzleLevel as IWordPuzzleLevel } from '../../types';
-import { shuffleArray } from '../../utils';
+import { WordPuzzleLevel as IWordPuzzleLevel } from '../../../app/(tabs)/(game)/types';
+import { shuffleArray } from '../../../app/(tabs)/(game)/utils';
 
 interface Letter {
   id: string;
@@ -135,6 +135,8 @@ const styles = StyleSheet.create({
   },
   mainContent: {
     alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
     paddingVertical: 12,
     paddingHorizontal: 16,
   },
@@ -213,29 +215,37 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   bankContainer: {
-    borderTopWidth: 2,
-    borderTopColor: '#f3f4f6',
-    paddingVertical: 12,
-    backgroundColor: '#fff',
+  borderTopWidth: 2,
+  borderTopColor: '#f3f4f6',
+  paddingVertical: 16,
+  backgroundColor: '#fff',
+  alignItems: 'center', // centers the ScrollView horizontally
   },
   bankContent: {
-    paddingHorizontal: 12,
-    alignItems: 'center',
+  paddingHorizontal: 0,
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'center', // centers children in the row
   },
   bankLetter: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#f9fafb',
-    borderWidth: 2,
-    borderColor: '#d1d5db',
-    marginHorizontal: 6,
-    justifyContent: 'center',
-    alignItems: 'center',
+  width: 56,
+  height: 56,
+  borderRadius: 12,           // tile corners
+  backgroundColor: '#f3f4f6',
+  borderWidth: 2,
+  borderColor: '#d1d5db',
+  marginHorizontal: 8,
+  justifyContent: 'center',
+  alignItems: 'center',
+  shadowColor: '#000',
+  shadowOpacity: 0.12,
+  shadowRadius: 6,
+  shadowOffset: { width: 0, height: 2 },
+  elevation: 4,
   },
   bankLetterText: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#111827',
+  fontSize: 22,
+  fontWeight: '800',
+  color: '#111827',
   },
 });

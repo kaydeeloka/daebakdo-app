@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { MCQLevel } from '../../types';
-import { shuffleArray } from '../../utils';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { MCQImageLevel } from '../../../app/(tabs)/(game)/types';
+import { shuffleArray } from '../../../app/(tabs)/(game)/utils';
 
-interface McqLevelProps {
-  level: MCQLevel;
+interface McqImageLevelProps {
+  level: MCQImageLevel;
   onComplete: (success: boolean) => void;
 }
 
-export const McqLevel: React.FC<McqLevelProps> = ({ level, onComplete }) => {
+export const McqImageLevel: React.FC<McqImageLevelProps> = ({ level, onComplete }) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [shuffledOptions, setShuffledOptions] = useState<string[]>([]);
@@ -30,13 +30,18 @@ export const McqLevel: React.FC<McqLevelProps> = ({ level, onComplete }) => {
 
   return (
     <View style={styles.root}>
-      {/* Main Content: Icon & Question */}
+      {/* Main Content: Image & Question */}
       <View style={styles.mainContent}>
-        <View style={styles.iconCircle}>
-          {/* Replace HelpCircle icon with emoji or vector icon */}
-          <Text style={styles.iconText}>❓</Text>
-        </View>
         <Text style={styles.questionText}>{level.question}</Text>
+
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: level.imageUrl }}
+            style={styles.image}
+            resizeMode="contain"
+            accessibilityLabel="Question"
+          />
+        </View>
       </View>
 
       {/* Footer: Options Grid */}
@@ -71,7 +76,7 @@ export const McqLevel: React.FC<McqLevelProps> = ({ level, onComplete }) => {
               activeOpacity={0.8}
             >
               <Text style={[styles.optionText, textStyle]}>{option}</Text>
-              {/* Add icons via react-native-vector-icons if desired */}
+              {/* For icons, use react-native-vector-icons or similar */}
             </TouchableOpacity>
           );
         })}
@@ -86,43 +91,42 @@ const styles = StyleSheet.create({
   },
   mainContent: {
     flexGrow: 1,
-    alignItems: 'center',
     justifyContent: 'center',
-    padding: 16,
+    alignItems: 'center',
+    paddingBottom: 16,
   },
-  iconCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+  questionText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    fontFamily: 'BalooChettan2-Medium',
+    color: '#111827',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  imageContainer: {
+    width: '100%',
+    maxHeight: '30%',
+    borderRadius: 24,
+    overflow: 'hidden',
     backgroundColor: '#fff',
     borderWidth: 4,
-    borderColor: 'rgba(244,63,94,0.1)', // secondary/10
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 24,
+    borderColor: '#fff',
     shadowColor: '#000',
     shadowOpacity: 0.15,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 5 },
     elevation: 5,
   },
-  iconText: {
-    fontSize: 32,
-    color: '#f43f5e', // secondary
-  },
-  questionText: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#111827',
-    textAlign: 'center',
-    lineHeight: 34,
+  image: {
+    width: '100%',
+    height: 200,
   },
   optionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
     gap: 12 as any,
-    padding: 8,
+    paddingBottom: 8,
   },
   optionButton: {
     minWidth: '40%',
@@ -145,19 +149,22 @@ const styles = StyleSheet.create({
   },
   optionButtonSuccess: {
     backgroundColor: '#dcfce7',
+    borderWidth: 1,
     borderColor: '#22c55e',
     shadowOpacity: 0,
     elevation: 0,
   },
   optionButtonDanger: {
     backgroundColor: '#fee2e2',
+    borderWidth: 1,
     borderColor: '#ef4444',
     shadowOpacity: 0,
     elevation: 0,
   },
   optionText: {
     fontWeight: 'bold',
-    fontSize: 18,
+    fontSize: 16,
+    fontFamily: 'BalooChettan2-Medium'
   },
   optionTextOutline: {
     color: '#111827',

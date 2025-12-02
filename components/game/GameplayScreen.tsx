@@ -1,7 +1,8 @@
-import Icon from '@react-native-vector-icons/material-icons'; // or your preferred icon set
+import Icon from '@react-native-vector-icons/material-icons';
 import React, { useEffect, useRef } from 'react';
 import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { GameLevel, QuestionType } from '../types';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { GameLevel, QuestionType } from '../../app/(tabs)/(game)/types';
 import { MatchingImageLevel } from './levels/MatchingImageLevel';
 import { MatchingLevel } from './levels/MatchingLevel';
 import { McqAudioLevel } from './levels/McqAudioLevel';
@@ -17,7 +18,11 @@ interface GameplayScreenProps {
   onLevelComplete: (success: boolean) => void;
   onExit: () => void;
   onRestart: () => void;
+  gameOver: boolean;         
+  score: number;             
+  totalLevels: number;       
 }
+
 
 export const GameplayScreen: React.FC<GameplayScreenProps> = ({
   levels,
@@ -25,6 +30,10 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
   topicName,
   onLevelComplete,
   onExit,
+  onRestart,
+  gameOver,
+  score,
+  totalLevels,
 }) => {
   const progressAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
@@ -85,19 +94,19 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
   });
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       {/* HEADER */}
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <View style={styles.titleColumn}>
             <TouchableOpacity onPress={onExit} style={styles.backButton}>
               <Icon name="arrow-back-ios" size={16} color="#9CA3AF" />
-              <Text style={styles.backText}>[translate:Back]</Text>
+              <Text style={styles.backText}>Back</Text>
             </TouchableOpacity>
             <Text style={styles.topicName}>{topicName}</Text>
           </View>
           <View style={styles.levelCounter}>
-            <Text style={styles.levelLabel}>[translate:Level]</Text>
+            <Text style={styles.levelLabel}>Level</Text>
             <Text style={styles.levelNumber}>
               {currentLevelIndex + 1} <Text style={styles.levelSeparator}>/</Text> {levels.length}
             </Text>
@@ -119,10 +128,35 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
           },
         ]}
         key={levels[currentLevelIndex]?.id || 'level'}
-      >
-        {renderLevel()}
+        >
+        {gameOver ? (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text style={{ fontSize: 24, fontWeight: '700', marginBottom: 8 }}>
+              Quiz finished!
+            </Text>
+            <Text style={{ fontSize: 16, marginBottom: 16 }}>
+              Score: {score} / {totalLevels}
+            </Text>
+            <View style={{ flexDirection: 'row', gap: 12 }}>
+              <TouchableOpacity
+                onPress={onRestart}
+                style={{ paddingHorizontal: 16, paddingVertical: 10, backgroundColor: '#2563EB', borderRadius: 8 }}
+              >
+                <Text style={{ color: '#fff', fontWeight: '600' }}>Restart</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={onExit}
+                style={{ paddingHorizontal: 16, paddingVertical: 10, backgroundColor: '#E5E7EB', borderRadius: 8 }}
+              >
+                <Text style={{ color: '#111827', fontWeight: '600' }}>Exit</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : (
+          renderLevel()
+        )}
       </Animated.View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -156,12 +190,14 @@ const styles = StyleSheet.create({
   backText: {
     color: '#9CA3AF',
     fontWeight: '700',
+    fontFamily: 'BalooChettan2-Medium',
     fontSize: 12,
     marginLeft: 4,
   },
   topicName: {
     fontSize: 20,
     fontWeight: '700',
+    fontFamily: 'BalooChettan2-Medium',
     color: '#111827',
   },
   levelCounter: {

@@ -12,7 +12,6 @@ export interface BaseLevel {
   id: string;
   type: QuestionType;
   question: string;
-  points: number;
 }
 
 export interface MCQLevel extends BaseLevel {
@@ -55,7 +54,7 @@ export interface MCQAudioLevel extends BaseLevel {
   textToSpeak: string;
   options: string[];
   correctAnswer: string;
-  language?: string; // Optional: 'en-US', 'ko-KR', etc.
+  language?: string; 
 }
 
 export interface MatchingImagePair {
@@ -104,10 +103,11 @@ export interface ScenarioNode {
 
 // Wrapper for a complete game scenario
 export interface Scenario {
+  subtitle: any;
   id: string;
   title: string;
   description: string;
-  icon: 'coffee' | 'plane'; // Simple string identifier for icons
+  icon: string; // Simple string identifier for icons
   initialNodeId: string;
   nodes: Record<string, ScenarioNode>;
 }

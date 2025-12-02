@@ -96,6 +96,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     paddingVertical: 16,
     alignItems: 'center',
+    marginBottom: 30,
   },
   buttonDisabled: {
     opacity: 0.5,

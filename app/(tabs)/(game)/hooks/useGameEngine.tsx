@@ -1,19 +1,6 @@
 import { useCallback, useState } from 'react';
 import { Choice, GameState, Message, Scenario } from '../types';
 
-/**
- * CUSTOM HOOK: useGameEngine
- * ------------------------------------------------------------------
- * This contains the "Brain" of the application. It manages the conversation flow.
- * 
- * CORE LOGIC OVERVIEW:
- * 1. It takes a 'Scenario' object as input.
- * 2. It tracks the 'currentNodeId' (where we are in the conversation).
- * 3. When a user picks a choice:
- *    - If CORRECT: It waits a bit (UX delay), then updates 'currentNodeId' to the 'nextId'.
- *    - If WRONG: It shows specific feedback text, then re-shows the choices for the SAME node.
- */
-
 export const useGameEngine = (scenario: Scenario) => {
   // --- STATE MANAGEMENT ---
   

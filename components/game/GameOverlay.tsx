@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { GameTopic } from '../types';
+import { GameTopic } from '../../app/(tabs)/(game)/types';
 // Replace your icons with react-native-vector-icons or other RN icon sets
 import Icon from '@react-native-vector-icons/material-icons';
 
@@ -22,6 +22,17 @@ export const StartScreen: React.FC<StartScreenProps> = ({ topics, onSelectTopic 
     </ScrollView>
   );
 };
+
+const allowedIconNames = [
+  "star", "message", "filter", "difference", "visibility", "repeat", "height", "sort", "map", "style", "source", "accessible", "done", "key", "home", "opacity", "search", "zoom-out-map"
+  // Add more allowed icon names as needed
+] as const;
+
+type AllowedIconName = typeof allowedIconNames[number];
+
+function getValidIconName(icon?: string): AllowedIconName {
+  return allowedIconNames.includes(icon as AllowedIconName) ? (icon as AllowedIconName) : "star";
+}
 
 const AnimatedTopicCard: React.FC<{ topic: GameTopic; delay: number; onPress: () => void }> = ({ topic, delay, onPress }) => {
   const opacity = useRef(new Animated.Value(0)).current;
@@ -46,7 +57,7 @@ const AnimatedTopicCard: React.FC<{ topic: GameTopic; delay: number; onPress: ()
     <Animated.View style={[styles.topicCard, { opacity, transform: [{ translateY }] }]}>
       <View style={styles.iconContainer}>
         {/* Replace topic.icon with an equivalent Icon component */}
-        <Icon name={topic.icon || "star"} size={48} color="#333" />
+        <Icon name={getValidIconName(topic.icon)} size={48} color="#333" />
       </View>
       <Text style={styles.topicTitle}>{topic.name}</Text>
       <Text style={styles.topicDescription}>{topic.description}</Text>

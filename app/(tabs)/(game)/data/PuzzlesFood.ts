@@ -6,30 +6,26 @@ const LEVELS_GENERAL_FOOD: GameLevel[] = [
     type: QuestionType.WORD_PUZZLE,
     question: 'What fruit is this?',
     imageUrl: 'https://images.unsplash.com/photo-1571771896612-618711422b07?auto=format&fit=crop&w=600&q=80',
-    word: 'BANANA',
-    points: 150,
+    word: '바나나',
   },
   {
     id: 'food2',
     type: QuestionType.WORD_PUZZLE,
     question: 'What fruit is this?',
     imageUrl: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=600&q=80',
-    word: 'APPLE',
-    points: 150,
+    word: '사과',
   },
   {
     id: 'food3',
     type: QuestionType.WORD_PUZZLE,
     question: 'What fruit is this?',
     imageUrl: 'https://images.unsplash.com/photo-1547514355-408c66e2c342?auto=format&fit=crop&w=600&q=80',
-    word: 'ORANGE',
-    points: 150,
+    word: '감귤',
   },
   {
     id: 'food4',
     type: QuestionType.MATCHING_IMAGE,
     question: 'Match the dish to its name.',
-    points: 150,
     pairs: [
       { id: 'f1', imageUrl: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=150&q=80', word: 'Pizza' },
       { id: 'f2', imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=150&q=80', word: 'Burger' },
@@ -47,7 +43,6 @@ const LEVELS_DRINKS: GameLevel[] = [
     imageUrl: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=600&q=80',
     options: ['Coffee', 'Tea', 'Juice', 'Water'],
     correctAnswer: 'Coffee',
-    points: 120,
   },
   {
     id: 'drink2',
@@ -55,7 +50,6 @@ const LEVELS_DRINKS: GameLevel[] = [
     question: 'Which of these contains caffeine?',
     options: ['Water', 'Milk', 'Espresso', 'Orange Juice'],
     correctAnswer: 'Espresso',
-    points: 100,
   },
   {
     id: 'drink3',
@@ -63,7 +57,6 @@ const LEVELS_DRINKS: GameLevel[] = [
     question: 'Unscramble the drink name.',
     imageUrl: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=600&q=80',
     word: 'WATER',
-    points: 150,
   },
 ];
 
@@ -72,14 +65,14 @@ export const FOOD_GAME_TOPICS: GameTopic[] = [
     id: 'general_food',
     name: 'Fruits & Dishes',
     description: 'Common foods you eat every day.',
-    icon: '🍎',
+    icon: 'general',
     levels: LEVELS_GENERAL_FOOD,
   },
   {
     id: 'drinks',
     name: 'Drinks & Beverages',
     description: 'Coffee, tea, and refreshments.',
-    icon: '☕',
+    icon: 'street',
     levels: LEVELS_DRINKS,
   }
 ];

@@ -1,5 +1,5 @@
 // app/(tabs)/_layout.tsx
-import { Ionicons } from '@expo/vector-icons';
+import { Home, Gamepad2, User, BookAIcon } from 'lucide-react';
 import { Tabs } from 'expo-router';
 import { Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,45 +17,33 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#FF8C32',
-        tabBarInactiveTintColor: '#999',
         tabBarStyle: {
-          backgroundColor: '#ffffff',
-          paddingBottom: bottomPadding,
-          height: tabBarHeight + (insets.bottom || 0),
-          borderTopWidth: 1,
-          borderTopColor: '#e0e0e0',
-          ...Platform.select({
-            android: { elevation: 8 },
-            ios: {
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: -2 },
-              shadowOpacity: 0.1,
-              shadowRadius: 4,
-            },
-          }),
+          backgroundColor: '#FF7A1A',
+          borderTopWidth: 0,
+          height: 74,
+          paddingTop: 6,
+          paddingBottom: 10,
         },
-        tabBarLabelStyle: {
-          fontSize: Platform.select({ ios: 12, android: 11 }),
-          fontFamily: 'BalooChettan2-Medium',
-        },
+        tabBarActiveTintColor: '#FFFFFF',
+        tabBarInactiveTintColor: '#FFE4CC',
       }}
     >
+      {/* Visible tab buttons */}
       <Tabs.Screen
         name="home"
         options={{
           title: 'Home',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" size={size} color={color} />
+            <Home name="home-outline" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="lesson"
+        name="learn"
         options={{
-          title: 'Lesson',
+          title: 'Learn',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="book-outline" size={size} color={color} />
+            <BookAIcon name="book-outline" size={size} color={color} />
           ),
         }}
       />
@@ -64,7 +52,7 @@ export default function TabLayout() {
         options={{
           title: 'Game',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="game-controller-outline" size={size} color={color} />
+            <Gamepad2 name="game-controller-outline" size={size} color={color} />
           ),
         }}
       />
@@ -73,10 +61,14 @@ export default function TabLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
+            <User name="person-outline" size={size} color={color} />
           ),
         }}
       />
+
+      {/* Hidden dynamic subpages — tab bar stays visible, no tab button */}
+      <Tabs.Screen name="(learn)/[essentials]" options={{ href: null }} />
+      <Tabs.Screen name="(game)/[components]" options={{ href: null }} />
     </Tabs>
   );
 }

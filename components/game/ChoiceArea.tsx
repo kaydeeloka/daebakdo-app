@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Choice } from '../types';
+import { Choice } from '../../app/(tabs)/(game)/types';
 
 interface ChoiceAreaProps {
   choices: Choice[];
@@ -13,7 +13,7 @@ export const ChoiceArea: React.FC<ChoiceAreaProps> = ({ choices, onSelect, disab
 
   return (
     <View style={styles.container}>
-      {choices.map((choice) => (
+      {choices.map(choice => (
         <TouchableOpacity
           key={choice.id}
           onPress={() => onSelect(choice)}
@@ -32,31 +32,40 @@ export const ChoiceArea: React.FC<ChoiceAreaProps> = ({ choices, onSelect, disab
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16, // p-4 approx 16px
-    backgroundColor: '#ffffff', // bg-white
-    borderTopWidth: 1,
-    borderTopColor: '#ccc', // border-border approximate
-    // No direct animation, could add using Animated API if needed
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#FFFFFF',
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: '#E5E7EB',
   },
   button: {
     width: '100%',
-    paddingVertical: 20, // py-5 equivalent approx
-    paddingHorizontal: 24, // px-6 equivalent approx
-    borderRadius: 20, // rounded-2xl approx 16-24
-    borderWidth: 1,
-    borderColor: '#ccc', // border-border approximate
-    backgroundColor: 'transparent',
+    paddingVertical: 16,
+    paddingHorizontal: 18,
+    borderRadius: 18,
+    backgroundColor: '#FFFFFF',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#E5E7EB',
     justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+    // subtle card-like elevation
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 1,
   },
   buttonDisabled: {
-    opacity: 0.5,
+    opacity: 0.6,
   },
   text: {
-    color: '#333333', // text-dark-text approx
-    fontSize: 18, // text-lg to text-xl approximation
+    color: '#111827',
+    fontSize: 17,
     fontWeight: '500',
+    textAlign: 'center',
   },
   textDisabled: {
-    color: '#999999',
+    color: '#9CA3AF',
   },
 });

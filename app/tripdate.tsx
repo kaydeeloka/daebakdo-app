@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Image,
   StyleSheet,
@@ -9,32 +9,44 @@ import {
   Platform,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { router } from 'expo-router';
 
 const tripmsg = require('@/assets/images/message/tripmsg.png');
 
 export default function TripDateScreen() {
-  const [tripDate, setTripDate] = useState<Date | null>(null);
-  const [showPicker, setShowPicker] = useState(false);
+  const today = new Date();
+
+  const [day, setDay] = useState<string>('');
+  const [month, setMonth] = useState<string>('');
+  const [year, setYear] = useState<string>('');
+
+  const tripDate = useMemo(() => {
+  const d = Number(day);
+  const m = Number(month);
+  const y = Number(year);
+
+  if (!d || !m || !y) return null;
+
+  // basic year range: 2025–2100 (adjust as you like)
+  if (y < 2025 || y > 2100) return null;
+
+  const date = new Date(y, m - 1, d);
+  if (
+    date.getFullYear() !== y ||
+    date.getMonth() !== m - 1 ||
+    date.getDate() !== d
+  ) {
+    return null; // invalid calendar date
+  }
+  return date;
+}, [day, month, year]);
+
 
   const formattedDate = tripDate
     ? tripDate.toLocaleDateString('en-GB')
-    : '';
-
-  const openPicker = () => {
-    setShowPicker(true);
-  };
-
-  const onChange = (_event: any, selectedDate?: Date) => {
-    // On Android, picker closes after selection; on iOS inline it stays
-    if (Platform.OS === 'android') {
-      setShowPicker(false);
-    }
-    if (selectedDate) {
-      setTripDate(selectedDate);
-    }
-  };
+    : `${day.padStart(2, '0') || 'dd'}/${month.padStart(2, '0') || 'mm'}/${
+        year.padStart(4, '0')  || 'yyyy'
+      }`;
 
   const goHome = () => {
     router.replace('/(tabs)/home');
@@ -56,31 +68,50 @@ export default function TripDateScreen() {
     <View style={styles.screen}>
       <Image source={tripmsg} style={styles.tripImage} resizeMode="contain" />
 
-      {/* Date field */}
-      <TouchableOpacity
-        style={styles.inputWrapper}
-        onPress={openPicker}
-        activeOpacity={0.8}
-      >
-        <TextInput
-          style={styles.input}
-          placeholder="dd/mm/yyyy"
+      {/* Custom date input: day / month / year */}
+      <View style={styles.inputWrapper}>
+        <View style={styles.dateRow}>
+          <TextInput
+            style={[styles.partInput, styles.partDay]}
+            keyboardType={Platform.OS === 'ios' ? 'number-pad' : 'numeric'}
+            maxLength={2}
+            placeholder="dd"
+            placeholderTextColor="#9e9e9e"
+            value={day}
+            onChangeText={text => setDay(text.replace(/[^0-9]/g, ''))}
+          />
+          <Text style={styles.separator}>/</Text>
+          <TextInput
+            style={[styles.partInput, styles.partMonth]}
+            keyboardType={Platform.OS === 'ios' ? 'number-pad' : 'numeric'}
+            maxLength={2}
+            placeholder="mm"
+            placeholderTextColor="#9e9e9e"
+            value={month}
+            onChangeText={text => setMonth(text.replace(/[^0-9]/g, ''))}
+          />
+          <Text style={styles.separator}>/</Text>
+          <TextInput
+          style={[styles.partInput, styles.partYear]}
+          keyboardType={Platform.OS === 'ios' ? 'number-pad' : 'default'}
+          maxLength={4}
+          placeholder="yyyy"
           placeholderTextColor="#9e9e9e"
-          value={formattedDate}
-          editable={false}
-          pointerEvents="none"
+          value={year}
+          onChangeText={text => setYear(text.replace(/[^0-9]/g, ''))}
         />
-      </TouchableOpacity>
 
-      {/* Native date picker */}
-      {showPicker && (
-        <DateTimePicker
-          value={tripDate || new Date()}
-          mode="date"
-          display={Platform.OS === 'ios' ? 'spinner' : 'calendar'}
-          onChange={onChange}
-        />
-      )}
+        </View>
+      </View>
+
+      <Text
+        style={[
+          styles.previewText,
+          !tripDate && (day || month || year) ? styles.previewError : null,
+        ]}
+      >
+        {tripDate ? formattedDate : 'Enter a valid date'}
+      </Text>
 
       <TouchableOpacity
         style={[styles.button, !isValid && styles.buttonDisabled]}
@@ -115,13 +146,45 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     borderWidth: 2,
     borderColor: '#06B5EA',
-    paddingHorizontal: 16,
+    paddingHorizontal: 4,
     justifyContent: 'center',
+    height: 56,
   },
-  input: {
-    height: 48,
-    fontSize: 16,
+  dateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+
+  },
+  partInput: {
+    fontSize: 18,
     fontFamily: 'BalooChettan2-Regular',
+    textAlign: 'center',
+  },
+  partDay: {
+    width: 60,
+    flex: 1,
+  },
+  partMonth: {
+    width: 60,
+    flex: 1,
+  },
+  partYear: {
+    width: 60,
+    flex: 1,
+  },
+  separator: {
+    fontSize: 18,
+    color: '#9e9e9e',
+    paddingHorizontal: 2,
+  },
+  previewText: {
+    marginTop: 8,
+    fontSize: 12,
+    color: '#4B5563',
+  },
+  previewError: {
+    color: '#DC2626',
   },
   button: {
     marginTop: 24,

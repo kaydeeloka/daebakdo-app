@@ -35,122 +35,95 @@ import { Scenario, ScenarioNode } from '../types';
 
 // --- SCENARIO 1: COFFEE SHOP ---
 const coffeeNodes: Record<string, ScenarioNode> = {
-  // 1. START NODE: The entry point
+  // 1. START NODE: 주문 시작 (What would you like?)
   start: {
     id: 'start',
-    text: "Hi there! Welcome to The Daily Grind. What can I get started for you today?",
+    text: "어서 오세요! 무엇을 드릴까요?",
     choices: [
       {
         id: 'c1_correct',
-        text: "Hi! I'd like to order a Latte, please.",
-        nextId: 'size_selection', // POINTS TO: The node with id 'size_selection'
+        text: "아이스 아메리카노 주세요.",
+        nextId: 'dine_takeout',
         isCorrect: true
       },
       {
         id: 'c1_wrong_1',
-        text: "Gimme a drink.",
-        nextId: null, // NULL: Stays on 'start'
+        text: "카드로 결제할게요.",
+        nextId: null,
         isCorrect: false,
-        feedback: "Um, I'd love to, but I need to know specifically what kind of drink you'd like! We have coffee, tea, and pastries."
+        feedback: "아직 주문을 안 하셨는데요! 먼저 메뉴를 말씀해 주세요."
       },
       {
         id: 'c1_wrong_2',
-        text: "Where is the bathroom?",
+        text: "화장실 어디에요?",
         nextId: null,
         isCorrect: false,
-        feedback: "It's in the back corner, but let's handle your order first if you're in line!"
+        feedback: "뒤쪽에 있어요. 하지만 먼저 주문부터 해요!"
       }
     ]
   },
-  
-  // 2. MIDDLE NODE: Size Selection
-  size_selection: {
-    id: 'size_selection',
-    text: "Sure thing, a Latte. What size would you like? We have 12oz, 16oz, or 20oz.",
+
+  // 2. MIDDLE NODE: 매장/포장 (For here or to go?)
+  dine_takeout: {
+    id: 'dine_takeout',
+    text: "네, 아이스 아메리카노요. 여기서 드실거예요? 포장해 드릴까요?",
     choices: [
       {
         id: 'c2_correct',
-        text: "I'll take the 16oz (Medium), please.",
-        nextId: 'milk_selection', // POINTS TO: 'milk_selection'
+        text: "포장해 주세요.",
+        nextId: 'payment_selection',
         isCorrect: true
       },
       {
         id: 'c2_wrong_1',
-        text: "The biggest one you have.",
+        text: "이름이 뭐에요?",
         nextId: null,
         isCorrect: false,
-        feedback: "Okay, 20oz it is... wait, actually could you confirm the specific size name just so I don't get it wrong?"
+        feedback: "진동벨로 부를게요! 포장/매장 중에 선택해 주세요."
       },
       {
         id: 'c2_wrong_2',
-        text: "Actually, I want a pizza.",
+        text: "얼마에요?",
         nextId: null,
         isCorrect: false,
-        feedback: "Haha, we're a coffee shop! We don't serve pizza. Still want that Latte?"
+        feedback: "먼저 포장/매장 알려 주세요! 가격을 알려 드릴게요."
       }
     ]
   },
-  
-  // 3. MIDDLE NODE: Milk Selection
-  milk_selection: {
-    id: 'milk_selection',
-    text: "Got it, 16oz Latte. Do you have a preference for milk? We have Whole, Oat, or Almond.",
+
+  // 3. MIDDLE NODE: 결제 방법 선택 (Payment type)
+  payment_selection: {
+    id: 'payment_selection',
+    text: "어떤 결제 방법을 하시겠어요? 현금, 카드, 또는 휴대폰 결제 가능합니다.",
     choices: [
       {
         id: 'c3_correct',
-        text: "Oat milk would be perfect.",
-        nextId: 'name_entry',
+        text: "카드로 할게요.",
+        nextId: 'end',
         isCorrect: true
       },
       {
         id: 'c3_wrong_1',
-        text: "Just regular milk.",
-        nextId: 'name_entry', // Note: This is also correct, leads to same place
-        isCorrect: true 
+        text: "사이즈를 말해 주세요.",
+        nextId: null,
+        isCorrect: false,
+        feedback: "결제 방법을 먼저 선택해 주세요!"
       },
       {
         id: 'c3_wrong_2',
-        text: "I want orange juice in it.",
+        text: "더 큰 사이즈 주세요.",
         nextId: null,
         isCorrect: false,
-        feedback: "Ew! I definitely can't do that. It would curdle immediately. Let's stick to milk options?"
+        feedback: "결제 방법을 먼저 골라 주세요!"
       }
     ]
   },
-  
-  // 4. MIDDLE NODE: Name
-  name_entry: {
-    id: 'name_entry',
-    text: "Great choice. Last thing, can I get a name for the order?",
-    choices: [
-      {
-        id: 'c4_correct',
-        text: "It's for Alex.",
-        nextId: 'end', // POINTS TO: 'end'
-        isCorrect: true
-      },
-      {
-        id: 'c4_wrong_1',
-        text: "Why do you need my name?",
-        nextId: null,
-        isCorrect: false,
-        feedback: "It's just so we can call it out when it's ready at the pick-up counter!"
-      },
-      {
-        id: 'c4_wrong_2',
-        text: "No.",
-        nextId: null,
-        isCorrect: false,
-        feedback: "Okay, I'll just put it under 'Mystery Guest' then... just kidding, a name really helps us out!"
-      }
-    ]
-  },
-  
-  // 5. END NODE: Conclusion
+
+  // 4. END NODE: 주문 완료
   end: {
     id: 'end',
-    text: "Perfect! That'll be $5.50. It'll be ready at the end of the bar in just a moment. Have a great day!",
-    choices: [] // EMPTY ARRAY = GAME OVER / SUCCESS SCREEN
+    text: "네, 결제 완료되었습니다. 주문하신 아이스 아메리카노 포장 4,500원입니다. 진동벨로 불러 드리겠습니다. 감사합니다!",
+    choices: []
   }
 };
 
@@ -302,11 +275,12 @@ const airportNodes: Record<string, ScenarioNode> = {
 export const scenarios: Record<string, Scenario> = {
   coffee: {
     id: 'coffee',
-    title: 'The Daily Grind',
+    title: 'Coffee Shop',
     description: 'Order a coffee like a pro.',
     icon: 'coffee', // Maps to <Coffee /> in App.tsx
-    initialNodeId: 'start', 
-    nodes: coffeeNodes
+    initialNodeId: 'start',
+    nodes: coffeeNodes,
+    subtitle: undefined
   },
   airport: {
     id: 'airport',
@@ -314,15 +288,16 @@ export const scenarios: Record<string, Scenario> = {
     description: 'Navigate the check-in counter.',
     icon: 'plane', // Maps to <Plane /> in App.tsx
     initialNodeId: 'start',
-    nodes: airportNodes
+    nodes: airportNodes,
+    subtitle: undefined
+  },
+  store: {
+    id: 'airport',
+    title: 'Airport Check-in',
+    description: 'Navigate the check-in counter.',
+    icon: 'plane', // Maps to <Plane /> in App.tsx
+    initialNodeId: 'start',
+    nodes: airportNodes,
+    subtitle: undefined
   }
-  // ADD YOUR NEW SCENARIO HERE:
-  // my_scenario: {
-  //   id: 'my_scenario',
-  //   title: 'My Title',
-  //   description: 'Description...',
-  //   icon: 'coffee', // or 'plane'
-  //   initialNodeId: 'start',
-  //   nodes: myScenarioNodes
-  // }
 };

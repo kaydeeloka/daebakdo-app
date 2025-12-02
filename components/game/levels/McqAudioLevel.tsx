@@ -1,12 +1,82 @@
+import * as Speech from 'expo-speech';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { MCQAudioLevel } from '../../types';
-import { shuffleArray } from '../../utils';
+import {
+  ActivityIndicator,
+  Alert,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { MCQAudioLevel } from '../../../app/(tabs)/(game)/types';
+import { shuffleArray } from '../../../app/(tabs)/(game)/utils';
 
 interface McqAudioLevelProps {
   level: MCQAudioLevel;
   onComplete: (success: boolean) => void;
 }
+
+const detectLanguage = (text: string, explicitLang?: string) => {
+  if (explicitLang) return explicitLang;
+
+  const hasKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(text);
+  return hasKorean ? 'ko-KR' : 'en-US';
+};
+
+const speakText = (
+  text: string,
+  lang: string,
+  onStart: () => void,
+  onEnd: () => void,
+  onError: () => void,
+) => {
+  if (Platform.OS === 'web') {
+    if (!('speechSynthesis' in global)) {
+      onError();
+      Alert.alert(
+        'Text-to-Speech not supported',
+        'Text-to-Speech is not supported in this browser.'
+      );
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = lang;
+    utterance.onstart = onStart;
+    utterance.onend = onEnd;
+    utterance.onerror = () => {
+      onError();
+      Alert.alert('TTS error', 'An error occurred while playing audio.');
+    };
+
+    global.speechSynthesis.speak(utterance);
+  } else {
+    Speech.speak(text, {
+      language: lang,
+      onStart,
+      onDone: onEnd,
+      onStopped: onEnd,
+      onError: () => {
+        onError();
+        Alert.alert(
+          'TTS error',
+          'An error occurred while playing audio. Check that Korean TTS is installed on this device.'
+        );
+      },
+    });
+  }
+};
+
+const stopSpeaking = () => {
+  if (Platform.OS === 'web') {
+    if ('speechSynthesis' in global) {
+      global.speechSynthesis.cancel();
+    }
+  } else {
+    Speech.stop();
+  }
+};
 
 export const McqAudioLevel: React.FC<McqAudioLevelProps> = ({ level, onComplete }) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
@@ -24,37 +94,25 @@ export const McqAudioLevel: React.FC<McqAudioLevelProps> = ({ level, onComplete 
   }, []);
 
   const cancelSpeech = () => {
-    if ('speechSynthesis' in global) {
-      global.speechSynthesis.cancel();
-      setIsPlaying(false);
-    }
+    stopSpeaking();
+    setIsPlaying(false);
   };
 
   const handleSpeak = () => {
-    if (!('speechSynthesis' in global)) {
-      Alert.alert("Text-to-Speech not supported", "Text-to-Speech is not supported on this platform.");
-      return;
-    }
+    const lang = detectLanguage(level.textToSpeak, level.language);
 
     if (isPlaying) {
-      global.speechSynthesis.cancel();
-      setIsPlaying(false);
+      cancelSpeech();
       return;
     }
 
-    const utterance = new SpeechSynthesisUtterance(level.textToSpeak);
-
-    if (level.language) {
-      utterance.lang = level.language;
-    } else {
-      const hasKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(level.textToSpeak);
-      utterance.lang = hasKorean ? 'ko-KR' : 'en-US';
-    }
-    utterance.onstart = () => setIsPlaying(true);
-    utterance.onend = () => setIsPlaying(false);
-    utterance.onerror = () => setIsPlaying(false);
-
-    global.speechSynthesis.speak(utterance);
+    speakText(
+      level.textToSpeak,
+      lang,
+      () => setIsPlaying(true),
+      () => setIsPlaying(false),
+      () => setIsPlaying(false)
+    );
   };
 
   const handleSelect = (option: string) => {
@@ -80,12 +138,15 @@ export const McqAudioLevel: React.FC<McqAudioLevelProps> = ({ level, onComplete 
         <TouchableOpacity
           onPress={handleSpeak}
           activeOpacity={0.8}
-          style={[styles.playButton, isPlaying ? styles.playButtonActive : styles.playButtonInactive]}
+          style={[
+            styles.playButton,
+            isPlaying ? styles.playButtonActive : styles.playButtonInactive,
+          ]}
         >
           {isPlaying ? (
             <ActivityIndicator size="large" color="#fff" />
           ) : (
-            <Text style={styles.playIcon}>▶</Text> // Simple play icon; replace with vector icon if desired
+            <Text style={styles.playIcon}>▶</Text>
           )}
         </TouchableOpacity>
 
@@ -118,11 +179,14 @@ export const McqAudioLevel: React.FC<McqAudioLevelProps> = ({ level, onComplete 
               key={index}
               onPress={() => handleSelect(option)}
               disabled={hasSubmitted}
-              style={[styles.optionButton, buttonStyle, hasSubmitted && !isCorrect && !isSelected ? { opacity: 0.4 } : {}]}
+              style={[
+                styles.optionButton,
+                buttonStyle,
+                hasSubmitted && !isCorrect && !isSelected ? { opacity: 0.4 } : {},
+              ]}
               activeOpacity={0.8}
             >
               <Text style={[styles.optionText, textStyle]}>{option}</Text>
-              {/* You can add icons here using a React Native icon library */}
             </TouchableOpacity>
           );
         })}
@@ -161,12 +225,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   playButtonActive: {
-    backgroundColor: '#f43f5e', // secondary
-    borderColor: '#fb7185', // secondary-light
+    backgroundColor: '#f43f5e',
+    borderColor: '#fb7185',
   },
   playButtonInactive: {
     backgroundColor: '#fff',
-    borderColor: '#e5e7eb', // gray-100
+    borderColor: '#e5e7eb',
   },
   playIcon: {
     fontSize: 48,
@@ -191,18 +255,12 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   optionButton: {
-    minWidth: '40%',
+    width: '100%',
+    marginVertical: 6,
+    paddingVertical: 14,
     borderRadius: 12,
-    paddingVertical: 16,
-    paddingHorizontal: 12,
-    margin: 6,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
   },
   optionButtonOutline: {
     backgroundColor: '#fff',
@@ -237,3 +295,5 @@ const styles = StyleSheet.create({
     color: '#b91c1c',
   },
 });
+
+export default McqAudioLevel;

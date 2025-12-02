@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
-import { Message } from '../types';
+import { Message } from '../../app/(tabs)/(game)/types';
 
 interface ChatMessageProps {
   message: Message;
@@ -13,14 +13,14 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   const bubbleStyle: ViewStyle[] = [
     styles.bubble,
     isBot ? styles.bubbleBot : styles.bubbleUser,
-    message.isErrorFeedback ? styles.bubbleError : null,
     isBot ? styles.roundedTLNone : styles.roundedTRNone,
+    ...(message.isErrorFeedback ? [styles.bubbleError] : []),
   ];
 
   const textStyle: TextStyle[] = [
     styles.text,
     isBot ? styles.textBot : styles.textUser,
-    message.isErrorFeedback ? styles.textError : null,
+    ...(message.isErrorFeedback ? [styles.textError] : []),
   ];
 
 
@@ -48,9 +48,8 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    marginBottom: 24,
+    marginBottom: 16,          // a bit tighter than 24 for mobile
     flexDirection: 'row',
-    maxWidth: '85%',
   },
   alignLeft: {
     justifyContent: 'flex-start',
@@ -60,15 +59,14 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   avatarContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#f3f4f6', // neutral-bg
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#f3f4f6',
     borderWidth: 1,
-    borderColor: '#e5e7eb', // border
+    borderColor: '#e5e7eb',
     overflow: 'hidden',
-    marginRight: 12,
-    flexShrink: 0,
+    marginRight: 8,
   },
   avatar: {
     width: '100%',
@@ -76,31 +74,32 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   bubble: {
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    borderRadius: 24,
+    maxWidth: '80%',           // prevent super-wide bubbles on large phones
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 18,
   },
   bubbleBot: {
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     borderColor: '#e5e7eb',
     borderWidth: 1,
     shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 1,
   },
   bubbleUser: {
-    backgroundColor: '#2563eb', // secondary (vibrant blue)
+    backgroundColor: '#2563eb',
     shadowColor: '#2563eb',
-    shadowOpacity: 0.4,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 5 },
-    elevation: 8,
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
   },
   bubbleError: {
-    backgroundColor: '#fef2f2', // bg-red-50
-    borderColor: '#fecaca', // border-red-200
+    backgroundColor: '#fef2f2',
+    borderColor: '#fecaca',
   },
   roundedTLNone: {
     borderTopLeftRadius: 0,
@@ -109,16 +108,17 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 0,
   },
   text: {
-    fontSize: 18,
-    lineHeight: 26,
+    fontSize: 16,
+    lineHeight: 22,
   },
   textBot: {
-    color: '#111827', // dark-text
+    color: '#111827',
   },
   textUser: {
-    color: '#fff',
+    color: '#ffffff',
   },
   textError: {
-    color: '#dc2626', // incorrect (red)
+    color: '#dc2626',
   },
 });
+

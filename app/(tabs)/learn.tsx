@@ -13,11 +13,11 @@ const lesson = require('@/assets/images/message/lessonmsg.png');
 
 const LearningScreen = () => {
   const cards = [
-    { title: 'Essential Phrases & Greetings', route: '(lesson)/essentials' },
-    { title: 'Travel Scenarios', route: '(lesson)/scenarios' },
-    { title: 'Transportation', route: '(lesson)/transportation' },
-    { title: 'Numbers & Money', route: '(lesson)/numbers' },
-    { title: 'Food & Dining', route: '(lesson)/foods' },
+    { title: 'Essential Phrases & Greetings', route: '(learn)/[essentials]' },
+    { title: 'Travel Scenarios', route: '(learn)/[scenarios]' },
+    { title: 'Transportation', route: '(learn)/[transportation]' },
+    { title: 'Numbers & Money', route: '(learn)/[numbers]' },
+    { title: 'Food & Dining', route: '(learn)/[foods]' },
   ];
 
   return (

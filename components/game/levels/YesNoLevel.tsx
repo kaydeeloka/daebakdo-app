@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { YesNoLevel as IYesNoLevel } from '../../types';
+import { YesNoLevel as IYesNoLevel } from '../../../app/(tabs)/(game)/types';
 
 interface YesNoLevelProps {
   level: IYesNoLevel;
@@ -56,7 +56,6 @@ export const YesNoLevel: React.FC<YesNoLevelProps> = ({ level, onComplete }) => 
           onPress={() => handleSelect(true)}
           disabled={selected !== null}
         >
-          <Text style={[styles.icon, selected === true ? styles.iconLight : styles.iconSecondary]}>👍</Text>
           <Text style={styles.buttonText}>YES</Text>
         </TouchableOpacity>
 
@@ -74,7 +73,6 @@ export const YesNoLevel: React.FC<YesNoLevelProps> = ({ level, onComplete }) => 
           onPress={() => handleSelect(false)}
           disabled={selected !== null}
         >
-          <Text style={[styles.icon, selected === false ? styles.iconLight : styles.iconSecondary]}>👎</Text>
           <Text style={styles.buttonText}>NO</Text>
         </TouchableOpacity>
       </View>
@@ -87,10 +85,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   mainContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  paddingHorizontal: 16,
+  paddingTop: 24, // tweak for how high you want it
   },
   iconCircle: {
     width: 64,
@@ -113,11 +112,12 @@ const styles = StyleSheet.create({
     color: '#f43f5e', // secondary
   },
   questionText: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#111827',
-    textAlign: 'center',
-    lineHeight: 34,
+  fontSize: 28,
+  fontWeight: 'normal',          // avoid conflicts
+  fontFamily: 'BalooChettan2-Medium',
+  color: '#111827',
+  textAlign: 'center',
+  lineHeight: 34,
   },
   feedbackContainer: {
     marginTop: 32,
@@ -134,9 +134,10 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   feedbackText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
+  fontSize: 20,
+  fontWeight: 'normal',
+  fontFamily: 'BalooChettan2-Medium',
+  textAlign: 'center',
   },
   correct: {
     color: '#22c55e', // green-500
@@ -145,10 +146,11 @@ const styles = StyleSheet.create({
     color: '#ef4444', // red-500
   },
   buttonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingBottom: 16,
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  paddingHorizontal: 16,
+  paddingBottom: 16,
+  height: 130, // or 140; adjust for your design
   },
   button: {
     flex: 1,
@@ -200,9 +202,10 @@ const styles = StyleSheet.create({
     color: '#f43f5e',
   },
   buttonText: {
-    fontSize: 24,
-    fontWeight: '900',
-    letterSpacing: 2,
-    color: '#111827',
+  fontSize: 24,
+  fontWeight: 'normal',
+  fontFamily: 'BalooChettan2-Medium',
+  letterSpacing: 2,
+  color: '#111827',
   },
 });
