@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BrainWave: Puzzle Mix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              'sans': ['Noto Sans KR', 'sans-serif'],
+              'korean': ['Gowun Dodum', 'serif'],
+            },
+            colors: {
+              'primary': '#FF7733',         // Tiger Orange
+              'primary-dark': '#E66A2E',    // Darker Tiger Orange
+              'primary-light': '#FF9966',   // Lighter Tiger Orange
+              'secondary': '#00A5E0',       // Vibrant Blue
+              'secondary-dark': '#008CBA',
+              'secondary-light': '#66D3F4',
+              'accent': '#FFD700',          // Golden Yellow
+              'correct': '#34C759',         // Bright Green (no change)
+              'incorrect': '#E74C3C',       // Clear Red (no change)
+              'light-bg': '#FFFBF5',        // Creamy Off-white
+              'dark-text': '#333333',       // Dark Charcoal
+              'light-text': '#FFFFFF',      // Pure White
+              'neutral-bg': '#F0EBE6',      // Warm Neutral
+              'border': '#E0D9D3',          // Warm Border
+            },
+            keyframes: {
+              fadeInScaleUp: {
+                '0%': { opacity: '0', transform: 'scale(0.95)' },
+                '100%': { opacity: '1', transform: 'scale(1)' },
+              },
+              confettiFall: {
+                '0%': { transform: 'translateY(-100%) rotate(0deg)', opacity: '1' },
+                '100%': { transform: 'translateY(100vh) rotate(720deg)', opacity: '0' },
+              },
+              subtleFloat: {
+                '0%': { transform: 'translateY(0px)' },
+                '50%': { transform: 'translateY(-10px)' },
+                '100%': { transform: 'translateY(0px)' },
+              },
+              shake: {
+                '0%, 100%': { transform: 'translateX(0)' },
+                '10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-5px)' },
+                '20%, 40%, 60%, 80%': { transform: 'translateX(5px)' },
+              },
+              pop: {
+                '0%': { transform: 'scale(0.8)', opacity: '0' },
+                '50%': { transform: 'scale(1.1)', opacity: '1' },
+                '100%': { transform: 'scale(1)', opacity: '1' },
+              }
+            },
+            animation: {
+              fadeInScaleUp: 'fadeInScaleUp 0.4s ease-out forwards',
+              confettiFall: 'confettiFall 5s linear forwards',
+              subtleFloat: 'subtleFloat 8s ease-in-out infinite',
+              shake: 'shake 0.5s ease-in-out',
+              pop: 'pop 0.3s ease-out forwards',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Noto Sans KR', sans-serif;
+        background-color: #FFFBF5;
+        color: #333333;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "framer-motion": "https://aistudiocdn.com/framer-motion@^12.23.24",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
