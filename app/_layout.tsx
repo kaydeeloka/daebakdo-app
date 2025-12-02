@@ -1,24 +1,25 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+// app/_layout.tsx
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+import { useFonts } from 'expo-font';
+import React from 'react';
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const [fontsLoaded] = useFonts({
+    'BalooChettan2-Regular': require('@/assets/fonts/BalooChettan2-Regular.ttf'),
+    'BalooChettan2-Medium': require('@/assets/fonts/BalooChettan2-Medium.ttf'),
+    'BalooChettan2-SemiBold': require('@/assets/fonts/BalooChettan2-SemiBold.ttf'),
+    'BalooChettan2-Bold': require('@/assets/fonts/BalooChettan2-Bold.ttf'),
+    'BalooChettan2-ExtraBold': require('@/assets/fonts/BalooChettan2-ExtraBold.ttf'),
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="main" />    {/* landing page, no tabs */}
+      <Stack.Screen name="(tabs)" />   {/* tab navigator */}
+    </Stack>
   );
 }
