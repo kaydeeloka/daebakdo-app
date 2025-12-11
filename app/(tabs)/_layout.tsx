@@ -65,9 +65,12 @@ export default function TabLayout() {
           ),
         }}
       />
-
       {/* Hidden dynamic subpages — tab bar stays visible, no tab button */}
-      <Tabs.Screen name="(learn)/[essentials]" options={{ href: null }} />
+      <Tabs.Screen name="learn/topics" options={{ href: null }} />
+      <Tabs.Screen name="learn/foods" options={{ href: null }} />
+      <Tabs.Screen name="learn/numbers" options={{ href: null }} />
+      <Tabs.Screen name="learn/scenarios" options={{ href: null }} />
+      <Tabs.Screen name="learn/transportation" options={{ href: null }} />
       <Tabs.Screen name="(game)/[components]" options={{ href: null }} />
     </Tabs>
   );

@@ -2,7 +2,7 @@ import Icon from '@react-native-vector-icons/material-icons';
 import React, { useEffect, useRef } from 'react';
 import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { GameLevel, QuestionType } from '../../app/(tabs)/(game)/types';
+import { GameLevel, QuestionType } from '../../app/(tabs)/game/types';
 import { MatchingImageLevel } from './levels/MatchingImageLevel';
 import { MatchingLevel } from './levels/MatchingLevel';
 import { McqAudioLevel } from './levels/McqAudioLevel';

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { WordPuzzleLevel as IWordPuzzleLevel } from '../../../app/(tabs)/(game)/types';
-import { shuffleArray } from '../../../app/(tabs)/(game)/utils';
+import { WordPuzzleLevel as IWordPuzzleLevel } from '../../../app/(tabs)/game/types';
+import { shuffleArray } from '../../../app/(tabs)/game/utils';
 
 interface Letter {
   id: string;

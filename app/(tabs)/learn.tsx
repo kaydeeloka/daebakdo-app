@@ -13,12 +13,14 @@ const lesson = require('@/assets/images/message/lessonmsg.png');
 
 const LearningScreen = () => {
   const cards = [
-    { title: 'Essential Phrases & Greetings', route: '(learn)/[essentials]' },
-    { title: 'Travel Scenarios', route: '(learn)/[scenarios]' },
-    { title: 'Transportation', route: '(learn)/[transportation]' },
-    { title: 'Numbers & Money', route: '(learn)/[numbers]' },
-    { title: 'Food & Dining', route: '(learn)/[foods]' },
-  ];
+  { title: 'Essential Phrases & Greetings', route: '/learn/essentials' },
+  { title: 'Travel Scenarios', route: '/learn/scenarios' },
+  { title: 'Transportation', route: '/learn/transportation' },
+  { title: 'Numbers & Money', route: '/learn/numbers' },
+  { title: 'Food & Dining', route: '/learn/foods' },
+];
+
+  const onPress = (route: string) => () => router.push(route as any);
 
   return (
     <ScrollView style={styles.container}>
@@ -34,7 +36,7 @@ const LearningScreen = () => {
             key={item.route}
             style={styles.card}
             activeOpacity={0.8}
-            onPress={() => router.push(item.route as any)}
+            onPress={onPress(item.route)}
           >
             <View style={styles.iconCircle} />
             <Text style={styles.cardText}>{item.title}</Text>

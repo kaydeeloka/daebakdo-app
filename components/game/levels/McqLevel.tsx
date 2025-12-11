@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { MCQLevel } from '../../../app/(tabs)/(game)/types';
-import { shuffleArray } from '../../../app/(tabs)/(game)/utils';
+import { MCQLevel } from '../../../app/(tabs)/game/types';
+import { shuffleArray } from '../../../app/(tabs)/game/utils';
 
 interface McqLevelProps {
   level: MCQLevel;

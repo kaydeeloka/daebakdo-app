@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { MatchingImageLevel as IMatchingImageLevel } from '../../../app/(tabs)/(game)/types';
-import { shuffleArray } from '../../../app/(tabs)/(game)/utils';
+import { MatchingImageLevel as IMatchingImageLevel } from '../../../app/(tabs)/game/types';
+import { shuffleArray } from '../../../app/(tabs)/game/utils';
 
 interface MatchingImageLevelProps {
   level: IMatchingImageLevel;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { YesNoLevel as IYesNoLevel } from '../../../app/(tabs)/(game)/types';
+import { YesNoLevel as IYesNoLevel } from '../../../app/(tabs)/game/types';
 
 interface YesNoLevelProps {
   level: IYesNoLevel;

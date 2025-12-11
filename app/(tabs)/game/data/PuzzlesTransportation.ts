@@ -13,18 +13,18 @@ const LEVELS_VEHICLES: GameLevel[] = [
     type: QuestionType.MCQ_IMAGE,
     question: 'Identify this mode of transport.',
     imageUrl: 'https://images.unsplash.com/photo-1532939163844-547f958e91b4?auto=format&fit=crop&w=600&q=80',
-    options: ['Car', 'Truck', 'Train', 'Bike'],
-    correctAnswer: 'Train',
+    options: ['차', '배', '기차', '자전거'],
+    correctAnswer: '기차',
   },
   {
     id: 'trans3',
     type: QuestionType.MATCHING,
-    question: 'Match the vehicle to its path.',
+    question: 'Match the vehicle.',
     pairs: [
-      { id: 'v1', left: 'Train', right: 'Tracks' },
-      { id: 'v2', left: 'Car', right: 'Road' },
-      { id: 'v3', left: 'Plane', right: 'Sky' },
-      { id: 'v4', left: 'Boat', right: 'Water' },
+      { id: 'v1', left: 'Train', right: '기차' },
+      { id: 'v2', left: 'Car', right: '차' },
+      { id: 'v3', left: 'Plane', right: '비행기' },
+      { id: 'v4', left: 'Taxi', right: '택시' },
     ],
   },
 ];
@@ -33,22 +33,22 @@ const LEVELS_AIRPORT: GameLevel[] = [
   {
     id: 'air1',
     type: QuestionType.WORD_PUZZLE,
-    question: 'Where do you catch a flight?',
+    question: 'Where is this?',
     imageUrl: 'https://images.unsplash.com/photo-1530521954074-e64f6810b32d?auto=format&fit=crop&w=600&q=80',
-    word: 'AIRPORT',
+    word: '공항',
   },
   {
     id: 'air2',
     type: QuestionType.YES_NO,
-    question: 'Do you need a passport for international flights?',
+    question: 'Does "출입국" mean "immigration"?',
     correctAnswer: true,
   },
   {
     id: 'air3',
     type: QuestionType.MCQ,
-    question: 'What do you show to get on the plane?',
-    options: ['Library Card', 'Boarding Pass', 'Receipt', 'Menu'],
-    correctAnswer: 'Boarding Pass',
+    question: 'Which one means passport?',
+    options: ['학생증', '여권', '영수증', '메뉴'],
+    correctAnswer: '여권',
   }
 ];
 

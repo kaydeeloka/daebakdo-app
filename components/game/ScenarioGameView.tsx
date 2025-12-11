@@ -8,8 +8,8 @@ import {
   View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useGameEngine } from '../../app/(tabs)/(game)/hooks/useGameEngine';
-import { Scenario } from '../../app/(tabs)/(game)/types';
+import { useGameEngine } from '../../app/(tabs)/game/hooks/useGameEngine';
+import { Scenario } from '../../app/(tabs)/game/types';
 import { ChatMessage } from './ChatMessage';
 import { ChoiceArea } from './ChoiceArea';
 import { TypingIndicator } from './TypingIndicator';

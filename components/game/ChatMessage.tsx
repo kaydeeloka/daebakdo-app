@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
-import { Message } from '../../app/(tabs)/(game)/types';
+import { Message } from '../../app/(tabs)/game/types';
 
 interface ChatMessageProps {
   message: Message;

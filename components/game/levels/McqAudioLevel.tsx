@@ -9,8 +9,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { MCQAudioLevel } from '../../../app/(tabs)/(game)/types';
-import { shuffleArray } from '../../../app/(tabs)/(game)/utils';
+import { MCQAudioLevel } from '../../../app/(tabs)/game/types';
+import { shuffleArray } from '../../../app/(tabs)/game/utils';
 
 interface McqAudioLevelProps {
   level: MCQAudioLevel;

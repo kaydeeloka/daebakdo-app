@@ -1,38 +1,5 @@
 import { Scenario, ScenarioNode } from '../types';
 
-/**
- * ==========================================================================================
- *                                  SCENARIO CREATION GUIDE
- * ==========================================================================================
- * 
- * HOW TO ADD A NEW SCENARIO:
- * 
- * 1. DEFINE YOUR NODES (The Conversation Graph)
- *    - Create a constant variable (e.g., `const pizzaNodes = { ... }`).
- *    - Every conversation needs a 'start' node.
- *    - Each node represents one message from the Bot.
- * 
- * 2. UNDERSTANDING FLOW & BRANCHING
- *    - When a user clicks a choice, the `nextId` determines where they go.
- *    - Correct Answer (`isCorrect: true`):
- *         The bot moves to the node matching `nextId`.
- *    - Wrong Answer (`isCorrect: false`):
- *         The bot stays on the CURRENT node.
- *         It shows the `feedback` message (e.g., "That's not right").
- *         Then it re-displays the choices so the user can try again.
- * 
- * 3. ENDING THE GAME
- *    - To end a scenario, create a node with an empty choices array: `choices: []`.
- * 
- * 4. ICONS
- *    - The `icon` property maps to the icon library in `App.tsx`.
- *    - CURRENT AVAILABLE NAMES: 'coffee', 'plane', 'user'.
- *    - To add more, open `App.tsx`, import the icon from 'lucide-react', and add it to `ICON_MAP`.
- * 
- * ==========================================================================================
- */
-
-
 // --- SCENARIO 1: COFFEE SHOP ---
 const coffeeNodes: Record<string, ScenarioNode> = {
   // 1. START NODE: 주문 시작 (What would you like?)
@@ -127,150 +94,184 @@ const coffeeNodes: Record<string, ScenarioNode> = {
   }
 };
 
-// --- SCENARIO 2: AIRPORT CHECK-IN ---
-const airportNodes: Record<string, ScenarioNode> = {
+// --- SCENARIO: Airport Check-in ---
+const airportNodes = {
   start: {
     id: 'start',
-    text: "Good morning. Welcome to SkyHigh Airlines. Where are you flying to today?",
+    text: "안녕하세요. 어디로 가세요?",
     choices: [
       {
         id: 'a1_correct',
-        text: "Hi, I'm flying to New York.",
+        text: "도쿄로 가요.",
         nextId: 'documents',
         isCorrect: true
       },
       {
         id: 'a1_wrong_1',
-        text: "I'd like a cheeseburger.",
+        text: "배고파요.",
         nextId: null,
         isCorrect: false,
-        feedback: "Sir, this is the check-in counter, not the food court. Where are you flying?"
+        feedback: "지금은 체크인 중이에요. 여행지(도시)를 말씀해주세요."
       },
       {
         id: 'a1_wrong_2',
-        text: "It's a secret.",
+        text: "비밀이에요.",
         nextId: null,
         isCorrect: false,
-        feedback: "I'm afraid I can't check you in if I don't know your destination!"
+        feedback: "목적지를 모르면 체크인을 할 수 없어요."
       }
     ]
   },
+
   documents: {
     id: 'documents',
-    text: "New York, excellent. May I see your passport and ticket, please?",
+    text: "좋습니다. 여권과 티켓 보여주세요.",
     choices: [
       {
         id: 'a2_correct',
-        text: "Here they are.",
-        nextId: 'bags',
+        text: "네, 여기 있어요.",
+        nextId: 'baggage',
         isCorrect: true
       },
       {
         id: 'a2_wrong_1',
-        text: "I left them at home.",
+        text: "집에 두고 왔어요.",
         nextId: null,
         isCorrect: false,
-        feedback: "Oh dear. You definitely need those to fly. Please double check your pockets?"
+        feedback: "여권 없이는 비행기를 탈 수 없어요. 확인해보세요."
       },
       {
         id: 'a2_wrong_2',
-        text: "Why do you need to see them?",
+        text: "왜 필요해요?",
         nextId: null,
         isCorrect: false,
-        feedback: "Standard security procedure. I need to verify your identity and booking."
+        feedback: "체크인을 위해 신분 확인이 필요합니다."
       }
     ]
   },
-  bags: {
-    id: 'bags',
-    text: "Thank you, everything looks in order. Are you checking any bags today?",
+
+  baggage: {
+    id: 'baggage',
+    text: "네, 확인했습니다. 수하물 부치시나요? 캐리어 있으세요?",
     choices: [
       {
         id: 'a3_correct_1',
-        text: "Yes, just this suitcase.",
-        nextId: 'security_q',
-        isCorrect: true
-      },
-      {
-        id: 'a3_correct_2',
-        text: "No, carry-on only.",
-        nextId: 'security_q',
-        isCorrect: true
-      },
-      {
-        id: 'a3_wrong_1',
-        text: "Can I check my friend in as luggage?",
-        nextId: null,
-        isCorrect: false,
-        feedback: "Haha, very funny. Human trafficking is strictly prohibited. Serious answers only, please."
-      }
-    ]
-  },
-  security_q: {
-    id: 'security_q',
-    text: "Alright. Place it on the scale. Has this bag been in your possession the entire time?",
-    choices: [
-      {
-        id: 'a4_correct',
-        text: "Yes, I packed it myself.",
+        text: "네, 이 가방이요.",
         nextId: 'end',
         isCorrect: true
       },
       {
-        id: 'a4_wrong_1',
-        text: "No, a stranger gave it to me outside.",
+        id: 'a3_correct_2',
+        text: "아니요, 기내 반입만 있어요.",
+        nextId: 'end',
+        isCorrect: true
+      },
+      {
+        id: 'a3_wrong_1',
+        text: "제 친구를 부치고 싶어요.",
         nextId: null,
         isCorrect: false,
-        feedback: "Whoa! That is a major security risk. We would have to call the police. Let's pretend you didn't say that."
+        feedback: "사람은 수하물이 될 수 없어요. 진지하게 답해주세요!"
       }
     ]
   },
+
   end: {
     id: 'end',
-    text: "Great. Here is your boarding pass. Your flight leaves from Gate B12. Have a safe trip!",
+    text: "알겠습니다. 체크인 완료입니다. 좋은 여행 되세요!",
     choices: []
   }
 };
 
-/*
- * ==========================================================================================
- *                                  TEMPLATE (COPY & PASTE THIS)
- * ==========================================================================================
- * 
- * const myScenarioNodes: Record<string, ScenarioNode> = {
- *   start: {
- *     id: 'start',
- *     text: "BOT MESSAGE HERE",
- *     choices: [
- *       {
- *         id: 'opt_1',
- *         text: "USER OPTION 1",
- *         nextId: 'node_2', // Go to node_2
- *         isCorrect: true
- *       },
- *       {
- *         id: 'opt_2',
- *         text: "WRONG OPTION",
- *         nextId: null, // Stay here
- *         isCorrect: false,
- *         feedback: "BOT FEEDBACK FOR WRONG ANSWER"
- *       }
- *     ]
- *   },
- *   node_2: {
- *      id: 'node_2',
- *      text: "NEXT BOT MESSAGE",
- *      choices: [] // Empty choices means END of conversation
- *   }
- * };
- * 
- * ==========================================================================================
- */
 
+// --- SCENARIO: Convenience Store Checkout ---
+const storeNodes = {
+  start: {
+    id: 'start',
+    text: "안녕하세요. 계산 도와드릴게요. 이거 모두 사시는 건가요?",
+    choices: [
+      {
+        id: 'c1_correct',
+        text: "네, 맞아요.",
+        nextId: 'pay',
+        isCorrect: true
+      },
+      {
+        id: 'c1_wrong_1',
+        text: "아니요, 그냥 구경해요.",
+        nextId: null,
+        isCorrect: false,
+        feedback: "계산대에서는 구경만 할 수 없어요. 사실 구매하실 건가요?"
+      },
+      {
+        id: 'c1_wrong_2',
+        text: "배고파요.",
+        nextId: null,
+        isCorrect: false,
+        feedback: "지금은 계산 질문에만 답해주세요. 모두 사시는 건가요?"
+      }
+    ]
+  },
 
-// --- EXPORTED COLLECTION ---
-// This is where the app looks for your levels.
-// Add your new scenario to this list.
+  pay: {
+    id: 'pay',
+    text: "총 4,500원입니다. 결제는 어떻게 하시나요?",
+    choices: [
+      {
+        id: 'c2_correct',
+        text: "카드로 할게요.",
+        nextId: 'extras',
+        isCorrect: true
+      },
+      {
+        id: 'c2_wrong_1',
+        text: "돈 없어요.",
+        nextId: null,
+        isCorrect: false,
+        feedback: "그러면 결제를 할 수 없어요. 결제 방법을 선택해주세요."
+      },
+      {
+        id: 'c2_wrong_2',
+        text: "무료예요?",
+        nextId: null,
+        isCorrect: false,
+        feedback: "죄송하지만 무료가 아닙니다. 결제 방법을 선택해주세요."
+      }
+    ]
+  },
+
+  extras: {
+    id: 'extras',
+    text: "결제 완료되었습니다. 봉투 필요하세요? 영수증도 드릴까요?",
+    choices: [
+      {
+        id: 'c3_correct_1',
+        text: "네, 둘 다 주세요.",
+        nextId: 'end',
+        isCorrect: true
+      },
+      {
+        id: 'c3_correct_2',
+        text: "봉투만 주세요.",
+        nextId: 'end',
+        isCorrect: true
+      },
+      {
+        id: 'c3_wrong_1',
+        text: "저는 가방이 아니에요.",
+        nextId: null,
+        isCorrect: false,
+        feedback: "잠시만요! 봉투가 필요한지 여쭤본 거예요. 필요하신가요?"
+      }
+    ]
+  },
+
+  end: {
+    id: 'end',
+    text: "네, 준비해드릴게요. 좋은 하루 되세요!",
+    choices: []
+  }
+};
 
 export const scenarios: Record<string, Scenario> = {
   coffee: {

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { GameTopic } from '../../app/(tabs)/(game)/types';
+import { GameTopic } from '../../app/(tabs)/game/types';
 // Replace your icons with react-native-vector-icons or other RN icon sets
 import Icon from '@react-native-vector-icons/material-icons';
 

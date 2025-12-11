@@ -2,12 +2,12 @@
 import { useState } from 'react';
 
 // Types & data
-import { FOOD_GAME_TOPICS } from './(game)/data/PuzzlesFood';
-import { NUMBER_GAME_TOPICS } from './(game)/data/PuzzlesNumber';
-import { TRANSPORT_GAME_TOPICS } from './(game)/data/PuzzlesTransportation';
-import { ESSENTIAL_WORDS_GAME_TOPICS } from './(game)/data/PuzzlesWord';
-import { scenarios } from './(game)/data/scenario';
-import { GameTopic } from './(game)/types';
+import { FOOD_GAME_TOPICS } from './game/data/PuzzlesFood';
+import { NUMBER_GAME_TOPICS } from './game/data/PuzzlesNumber';
+import { TRANSPORT_GAME_TOPICS } from './game/data/PuzzlesTransportation';
+import { ESSENTIAL_WORDS_GAME_TOPICS } from './game/data/PuzzlesWord';
+import { scenarios } from './game/data/scenario';
+import { GameTopic } from './game/types';
 
 // Components
 import { GameplayScreen } from '@/components/game/GameplayScreen';
