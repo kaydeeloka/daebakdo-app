@@ -1,10 +1,22 @@
 import { useRouter } from 'expo-router';
-import { Pressable, StyleSheet } from 'react-native';
+import { Platform, Pressable, StyleSheet } from 'react-native';
 
 import { Text, View } from '@/components/Themed';
 
 export default function TabTwoScreen() {
   const router = useRouter();
+  const buttonShadow = Platform.select({
+    web: {
+      boxShadow: '0px 6px 16px rgba(0, 0, 0, 0.14)',
+    },
+    default: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.14,
+      shadowRadius: 10,
+      elevation: 4,
+    },
+  });
 
   const destinations = [
     { label: 'Kaydee', href: '/kaydee' },
@@ -21,7 +33,7 @@ export default function TabTwoScreen() {
         {destinations.map((destination) => (
           <Pressable
             key={destination.label}
-            style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
+            style={({ pressed }) => [styles.button, buttonShadow, pressed && styles.buttonPressed]}
             onPress={() => router.push(destination.href as never)}>
             <Text style={styles.buttonText}>{destination.label}</Text>
           </Pressable>
@@ -64,11 +76,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#1F2937',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.14,
-    shadowRadius: 10,
-    elevation: 4,
   },
   buttonPressed: {
     opacity: 0.85,
