@@ -1,12 +1,12 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function KaydeeScreen() {
+export default function FahrizalScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Muhsinnnn Page</Text>
-      <Text style={styles.subtitle}>muhsinnnnn</Text>
+      <Text style={styles.title}>Welcome to Fahrizal Page</Text>
+      <Text style={styles.subtitle}>This is a testing page</Text>
       <View style={styles.content}>
-        <Text style={styles.text}>Muhsinnnnn</Text>
+        <Text style={styles.text}>Your content goes here</Text>
       </View>
     </View>
   );
@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#1e1ea8',
   },
   title: {
     fontSize: 24,

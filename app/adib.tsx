@@ -3,10 +3,10 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function KaydeeScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Kaydee Page. Hiiii</Text>
-      <Text style={styles.subtitle}>This is a simple page</Text>
+      <Text style={styles.title}>Welcome to Adib's Page</Text>
+      <Text style={styles.subtitle}>This is a exclusively Adib's Page</Text>
       <View style={styles.content}>
-        <Text style={styles.text}>Your content goes here</Text>
+        <Text style={styles.text}>Adib was here 2026</Text>
       </View>
     </View>
   );
@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#f311ca',
+    backgroundColor: '#0e7746',
   },
   title: {
     fontSize: 24,
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
-    backgroundColor: '#2ccee4',
+    backgroundColor: '#f0f0f0',
     borderRadius: 8,
   },
   text: {
