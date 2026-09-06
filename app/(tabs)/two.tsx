@@ -22,7 +22,7 @@ export default function TabTwoScreen() {
     { label: 'Kaydee', href: '/kaydee' },
     { label: 'Adib', href: '/adib' },
     { label: 'Fahrizal', href: '/fahrizal' },
-    { label: 'Muhsin', href: '/muhsin' },
+    { label: 'matchingCard', href: '/matchingCard' },
   ] as const;
 
   return (
